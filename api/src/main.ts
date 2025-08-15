@@ -11,11 +11,24 @@ async function bootstrap() {
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
+      .addGlobalResponse({
+        status: 429,
+        description: 'Demasiados intentos al recurso',
+      })
+      .addGlobalResponse({
+        status: 500,
+        description: 'Error interno en el servidor',
+      })
       .setTitle('Api Tareas')
       .setDescription('Api de tareas')
       .setVersion(packageJson.version)
-      .addBearerAuth()
+      .addBearerAuth({
+        type: 'http',
+        in: 'header',
+        scheme: "bearer"
+      })
       .build();
+
 
     const document = SwaggerModule.createDocument(app, config);
 

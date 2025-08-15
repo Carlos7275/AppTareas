@@ -70,9 +70,7 @@ export class AuthService {
         return this.jwtService.sign(payload, { expiresIn, secret: this._token });
     }
 
-    async me(token: string): Promise<any> {
-        const jwtdecoded = this.jwtService.decode(token);
-        const id = jwtdecoded['uid'];
+    async me(id: number): Promise<any> {
 
         const user: Usuarios = await this.usuarioService.findOne({
             where: { id, estatus: true },

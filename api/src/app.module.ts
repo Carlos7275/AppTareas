@@ -13,6 +13,9 @@ import { JwtAuthGuard } from './guards/jwt.guard';
 import { ErrorFilter } from './filters/error.filter';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LocalStrategy } from './strategy/local.strategy';
+import { UsuariosController } from './v1/usuarios/usuarios.controller';
+import { UsuariosController } from './controllers/v1/usuarios/usuarios.controller';
+import { UsuariosModule } from './controllers/v1/usuarios/usuarios.module';
 
 @Module({
   imports: [
@@ -30,6 +33,7 @@ import { LocalStrategy } from './strategy/local.strategy';
         },
       ],
     }),
+    UsuariosModule,
   ],
   providers: [DatabaseSeederService,
 
@@ -46,6 +50,7 @@ import { LocalStrategy } from './strategy/local.strategy';
       provide: APP_GUARD,
       useClass: CustomThrottlerGuard
     }],
+  controllers: [UsuariosController],
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly databaseSeederService: DatabaseSeederService) { }

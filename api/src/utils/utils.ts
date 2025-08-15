@@ -4,7 +4,7 @@ export class Utils {
   static Response(
     message: string,
     data?: any,
-    search?: string,
+    search?: string ,
     total?: number,
   ) {
     return { message, search, data, total };

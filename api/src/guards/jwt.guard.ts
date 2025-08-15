@@ -1,9 +1,4 @@
-import {
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
@@ -41,7 +36,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const usuario = await this.obtenerUsuario(token);
     const estaEnListaNegra = await this.listaNegraService.isBlacklisted(token)
     if (estaEnListaNegra || !usuario.estatus) {
-      throw new ForbiddenException('Acceso denegado');
+      throw new ForbiddenException('No tienes acceso a este recurso.');
     }
 
     request.user = usuario;
@@ -58,7 +53,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     const [, token] = authHeader.split(' ');
     if (!token) {
-      throw new UnauthorizedException('El token JWT es obligatorio y no fue proporcionado.');
+      throw new UnauthorizedException('El token JWT esta vácio.');
     }
 
     return token;
@@ -78,7 +73,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       });
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError)
-        throw new ForbiddenException('Su token ha expirado');
+        throw new ForbiddenException('Su token ha expirado.');
 
       throw error;
     }
