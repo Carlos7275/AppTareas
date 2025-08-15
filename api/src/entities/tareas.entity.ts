@@ -16,6 +16,8 @@ export class Tareas extends GenericEntity {
         default: Prioridad.NORMAL,
     })
 
+    @Column()
+    id_usuario: number
     prioridad: Prioridad
     @Column()
     fecha_inicio: Date;

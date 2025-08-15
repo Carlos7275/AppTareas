@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, HttpCode, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, NotFoundException, Param, ParseIntPipe, Post, Put, Query, Req, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { NotFoundError } from 'rxjs';
 import CreateTareasDTO from 'src/models/Tareas/CreateTareasDto';
 import EstadoCompletado from 'src/models/Tareas/EstadoCompletadoDTO';
 import { UpdateTareaDTO } from 'src/models/Tareas/UpdateTareaDTO';
 import { TareasService } from 'src/services/tareas.service';
+import { Filter } from 'src/types/filtros.type';
 import { Utils } from 'src/utils/utils';
 
 @ApiTags("tareas")
@@ -16,8 +17,9 @@ export class TareasController {
     @ApiBearerAuth()
     @HttpCode(201)
     @ApiBody({ type: CreateTareasDTO, required: true })
-    async crearTarea(@Body() createTareaDTO: CreateTareasDTO) {
-        const tareaCreada = await this._tareasService.create({ ...createTareaDTO })
+    async crearTarea(@Body() createTareaDTO: CreateTareasDTO, @Req() req: any) {
+        const id_usuario = req.user.id;
+        const tareaCreada = await this._tareasService.create({ ...createTareaDTO, id_usuario })
 
         return Utils.Response("¡Operación exitosa!", tareaCreada);
     }
@@ -50,23 +52,29 @@ export class TareasController {
     }
 
     @HttpCode(200)
-    @Post("listado")
+    @Post("mi-listado")
     @ApiBearerAuth()
     @ApiQuery({ name: 'pagina', required: false, type: Number })
     @ApiQuery({ name: 'limite', required: false, type: Number })
     @ApiQuery({ name: 'busqueda', required: false, type: String })
-    async ObtenerUsuarios(
-
+    async obtenerTareas(
+        @Req() req: any,
         @Query('pagina') pagina?: number,
         @Query('limite') limite?: number,
         @Query('busqueda') busqueda?: string,
     ) {
+
+        const filtros: Filter[] = [{ field: "id_usuario", operator: "eq", value: req.user.id }];
+
         let data = await this._tareasService.paginate(
             pagina,
             limite,
             ['id', 'nombre',],
             busqueda,
-            ['password'],
+            [],
+            [],
+            filtros
+
 
         );
         return Utils.Response('Operacion Exitosa', data.data, busqueda, data.total);
