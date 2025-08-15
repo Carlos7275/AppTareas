@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, HttpCode, Param, ParseIntPipe, Post, Put, Query, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { UrlPrefixInterceptor } from 'src/interceptors/urlPreffix.interceptor';
+import { Body, Controller, Delete, HttpCode, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { NotFoundError } from 'rxjs';
 import CreateTareasDTO from 'src/models/Tareas/CreateTareasDto';
 import EstadoCompletado from 'src/models/Tareas/EstadoCompletadoDTO';
 import { UpdateTareaDTO } from 'src/models/Tareas/UpdateTareaDTO';
@@ -25,7 +25,8 @@ export class TareasController {
     @Put("modificar/:id")
     @ApiBearerAuth()
     async modificarTarea(@Param("id", ParseIntPipe) id: number, @Body() updateTareaDto: UpdateTareaDTO) {
-        await this._tareasService.update(id, { ...updateTareaDto });
+        const existe = await this._tareasService.update(id, { ...updateTareaDto });
+        if (existe.length == 0) throw new NotFoundException(`No se encontro la tarea con id: ${id}`);
 
         return Utils.Response("¡Operación exitosa!", "¡Se modifico la tarea!")
     }
@@ -33,7 +34,10 @@ export class TareasController {
     @Delete("eliminar/:id")
     @ApiBearerAuth()
     async eliminarTarea(@Param("id", ParseIntPipe) id: number) {
-        await this._tareasService.deleteWhere({ where: { id: id } })
+        const existe = await this._tareasService.deleteWhere({ where: { id: id } })
+
+        if (existe.length == 0) throw new NotFoundException(`No se encontro la tarea con id: ${id}`);
+
         return Utils.Response("¡Operación exitosa!", "¡Se elimino la tarea!")
     }
 
@@ -63,7 +67,7 @@ export class TareasController {
             ['id', 'nombre',],
             busqueda,
             ['password'],
-            
+
         );
         return Utils.Response('Operacion Exitosa', data.data, busqueda, data.total);
     }

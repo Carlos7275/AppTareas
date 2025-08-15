@@ -11,13 +11,8 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 export abstract class GenericService<Entity extends GenericEntity> {
     constructor(private readonly repository: Repository<Entity>) { }
 
-    create(
-        entity:
-            | QueryDeepPartialEntity<Entity>
-            | QueryDeepPartialEntity<Entity>[]
-            | Entity,
-    ): any {
-        return this.repository.insert(entity as QueryDeepPartialEntity<Entity>);
+    async create(entity: QueryDeepPartialEntity<Entity> | Entity) {
+        return await this.repository.save(entity as Entity);
     }
 
     find(options?: FindManyOptions<Entity>): Promise<Entity[]> {
