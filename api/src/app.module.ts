@@ -1,26 +1,25 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { AuthController } from './controllers/v1/auth/auth.controller';
-import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './shared/common.module';
 import { AuthModule } from './controllers/v1/auth/auth.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { configDotenv } from 'dotenv';
 import { DatabaseSeederService } from './services/databaseseeder.service';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './guards/customthrottler.guards';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { ErrorFilter } from './filters/error.filter';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { LocalStrategy } from './strategy/local.strategy';
-import { UsuariosController } from './v1/usuarios/usuarios.controller';
-import { UsuariosController } from './controllers/v1/usuarios/usuarios.controller';
 import { UsuariosModule } from './controllers/v1/usuarios/usuarios.module';
+import { GenerosModule } from './controllers/v1/generos/generos.module';
+import { TareasController } from './controllers/v1/tareas/tareas.controller';
+import { TareasModule } from './controllers/v1/tareas/tareas.module';
+import { ReportesController } from './controllers/v1/reportes/reportes.controller';
+import { ReportesModule } from './controllers/v1/reportes/reportes.module';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '/public/'),
+      rootPath: join(__dirname, '..', 'public'), 
       serveRoot: '/public',
     }),
     AuthModule,
@@ -34,6 +33,9 @@ import { UsuariosModule } from './controllers/v1/usuarios/usuarios.module';
       ],
     }),
     UsuariosModule,
+    GenerosModule,
+    TareasModule,
+    ReportesModule,
   ],
   providers: [DatabaseSeederService,
 
@@ -50,7 +52,7 @@ import { UsuariosModule } from './controllers/v1/usuarios/usuarios.module';
       provide: APP_GUARD,
       useClass: CustomThrottlerGuard
     }],
-  controllers: [UsuariosController],
+  controllers: [],
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly databaseSeederService: DatabaseSeederService) { }

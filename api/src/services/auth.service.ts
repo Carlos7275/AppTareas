@@ -5,8 +5,8 @@ import { Usuarios } from 'src/entities/usuarios.entity';
 import { PayloadModel } from 'src/models/Payload/payload.model';
 import { UsuariosService } from './usuarios.service';
 import { ListaNegraService } from './lista-negra.service';
-import { config } from 'dotenv';
-config();
+import { configDotenv } from 'dotenv';
+configDotenv();
 @Injectable()
 export class AuthService {
     _token = process.env.jwtSecret;
