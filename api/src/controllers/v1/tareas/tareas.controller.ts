@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, HttpCode, NotFoundException, Param, ParseIntPipe, Post, Put, Query, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, NotFoundException, Param, ParseIntPipe, Post, Put, Query, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { NotFoundError } from 'rxjs';
 import CreateTareasDTO from 'src/models/Tareas/CreateTareasDto';
 import EstadoCompletado from 'src/models/Tareas/EstadoCompletadoDTO';
 import { UpdateTareaDTO } from 'src/models/Tareas/UpdateTareaDTO';
