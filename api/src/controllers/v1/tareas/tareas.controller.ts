@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, HttpCode, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, HttpCode, Param, ParseIntPipe, Post, Put, Query, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { UrlPrefixInterceptor } from 'src/interceptors/urlPreffix.interceptor';
 import CreateTareasDTO from 'src/models/Tareas/CreateTareasDto';
 import EstadoCompletado from 'src/models/Tareas/EstadoCompletadoDTO';
 import { UpdateTareaDTO } from 'src/models/Tareas/UpdateTareaDTO';
@@ -7,7 +8,7 @@ import { TareasService } from 'src/services/tareas.service';
 import { Utils } from 'src/utils/utils';
 
 @ApiTags("tareas")
-@Controller('v1/tareas')
+@Controller('api/v1/tareas')
 export class TareasController {
     constructor(private _tareasService: TareasService) { }
 
@@ -42,6 +43,29 @@ export class TareasController {
         await this._tareasService.update(id, { completado: estadoCompletado.completado })
         const estado = estadoCompletado.completado == true ? " COMPLETADO" : "NO COMPLETADO";
         return Utils.Response("¡Operacion Exitosa!", `Se cambio la tarea al estado ${estado}`)
+    }
+
+    @HttpCode(200)
+    @Post("listado")
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'pagina', required: false, type: Number })
+    @ApiQuery({ name: 'limite', required: false, type: Number })
+    @ApiQuery({ name: 'busqueda', required: false, type: String })
+    async ObtenerUsuarios(
+
+        @Query('pagina') pagina?: number,
+        @Query('limite') limite?: number,
+        @Query('busqueda') busqueda?: string,
+    ) {
+        let data = await this._tareasService.paginate(
+            pagina,
+            limite,
+            ['id', 'nombre',],
+            busqueda,
+            ['password'],
+            
+        );
+        return Utils.Response('Operacion Exitosa', data.data, busqueda, data.total);
     }
 
 }
