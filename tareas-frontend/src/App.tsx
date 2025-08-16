@@ -1,25 +1,26 @@
 import "./App.css";
-import { Navigate, Routes } from "react-router";
+import { Navigate, Routes, Route } from "react-router";
 import Navbar from "./components/navbar/navbar";
-import { Route } from "react-router";
-import inicio from "./assets/pages/inicio/inicio";
 import { PublicRoute } from "./guards/public.guard";
-import Login from "./assets/pages/login/login";
+import { ProtectedRoute } from "./guards/protected.guard";
 import { isTokenExpired } from "./utils/auth.util";
 import Swal from "sweetalert2";
-import { useEffect } from "react";
-import Registro from "./assets/pages/registro/registro";
-import Error404 from "./assets/pages/error404/error404";
-import Error500 from "./assets/pages/error500/error500";
+import { useEffect, Suspense, lazy } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useTokenRefresher } from "./hooks/useTokenRefresher";
-import { ProtectedRoute } from "./guards/protected.guard";
-import DashboardTareas from "./assets/pages/dashboard-tareas/dashboard-tareas";
-import ConfiguracionUsuario from "./assets/pages/configuracion-usuario/configuracion-usuario";
-import Perfil from "./assets/pages/perfil/perfil";
 import { UserProvider } from "./providers/user.provider";
-import CambiarContra from "./assets/pages/cambiar-contra/cambiar-contra";
+
+// ✅ Lazy imports
+const Inicio = lazy(() => import("./assets/pages/inicio/inicio"));
+const Login = lazy(() => import("./assets/pages/login/login"));
+const Registro = lazy(() => import("./assets/pages/registro/registro"));
+const Error404 = lazy(() => import("./assets/pages/error404/error404"));
+const Error500 = lazy(() => import("./assets/pages/error500/error500"));
+const DashboardTareas = lazy(() => import("./assets/pages/dashboard-tareas/dashboard-tareas"));
+const ConfiguracionUsuario = lazy(() => import("./assets/pages/configuracion-usuario/configuracion-usuario"));
+const Perfil = lazy(() => import("./assets/pages/perfil/perfil"));
+const CambiarContra = lazy(() => import("./assets/pages/cambiar-contra/cambiar-contra"));
 
 function App() {
   useTokenRefresher();
@@ -37,7 +38,7 @@ function App() {
 
       Swal.fire(
         "¡Atención!",
-        "¡'Su Sesión Expiro, vuelva iniciar sesion para continuar navegando!!'!",
+        "¡Su sesión expiró, vuelva a iniciar sesión para continuar navegando!",
         "info"
       ).then(() => {
         window.location.reload();
@@ -50,53 +51,59 @@ function App() {
       <UserProvider>
         <Navbar />
         <div id="contenido">
-          <Routes>
-            <Route Component={inicio} path="/" />
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              }
-            ></Route>
+          {/* Suspense para mostrar loading mientras carga cada página */}
+          <Suspense fallback={<div className="text-center p-5">Cargando...</div>}>
+            <Routes>
+              <Route path="/" element={<Inicio />} />
 
-            <Route
-              path="/registro"
-              element={
-                <PublicRoute>
-                  <Registro />
-                </PublicRoute>
-              }
-            ></Route>
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                }
+              />
 
-            <Route
-              element={
-                <ProtectedRoute>
-                  <DashboardTareas />
-                </ProtectedRoute>
-              }
-              path="dashboard-tareas"
-            ></Route>
-            <Route
-              path="configuracion-usuario"
-              element={
-                <ProtectedRoute>
-                  <ConfiguracionUsuario />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="perfil" Component={Perfil}></Route>
-              <Route path="cambiar-password" Component={CambiarContra}></Route>
-              <Route index element={<Navigate to="perfil" replace />} />{" "}
-            </Route>
-            <Route path="*" element={<Error404 />} />
+              <Route
+                path="/registro"
+                element={
+                  <PublicRoute>
+                    <Registro />
+                  </PublicRoute>
+                }
+              />
 
-            <Route path="error404" Component={Error404}></Route>
-            <Route path="error500" Component={Error500}></Route>
-          </Routes>
+              <Route
+                path="dashboard-tareas"
+                element={
+                  <ProtectedRoute>
+                    <DashboardTareas />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="configuracion-usuario"
+                element={
+                  <ProtectedRoute>
+                    <ConfiguracionUsuario />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="perfil" element={<Perfil />} />
+                <Route path="cambiar-password" element={<CambiarContra />} />
+                <Route index element={<Navigate to="perfil" replace />} />
+              </Route>
+
+              <Route path="*" element={<Error404 />} />
+              <Route path="error404" element={<Error404 />} />
+              <Route path="error500" element={<Error500 />} />
+            </Routes>
+          </Suspense>
         </div>
       </UserProvider>
+
       <ToastContainer position="bottom-right" autoClose={3000} />
     </>
   );
