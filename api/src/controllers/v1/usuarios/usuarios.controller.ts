@@ -59,13 +59,10 @@ export class UsuariosController {
     async ModificarUsuario(
         @Param('id') id: number,
         @Body() user: UpdateUserDTO,
-        @Req() request: Request,
     ) {
-        const token = request.headers['authorization']
-            .replace('Bearer ', '')
-            .trim();
 
-        const usuario = await this.authService.me(token);
+
+        const usuario = await this.authService.me(id);
 
         const hayPermiso = usuario.id_rol == 1;
 
@@ -105,13 +102,11 @@ export class UsuariosController {
     @ApiBody({ type: ChangePasswordDTO, required: true })
     async CambiarContraseña(
         @Body() changePasswordDTO: ChangePasswordDTO,
-        @Req() request: Request,
+        @Req() request,
     ) {
-        const token = request.headers['authorization']
-            .replace('Bearer ', '')
-            .trim();
 
-        const { id } = await this.authService.me(token);
+        const id_usuario = request.user.id;
+        const { id } = await this.authService.me(id_usuario);
         await this.usuarioService.CambiarContraseña(id, changePasswordDTO);
         return Utils.Response('Operacion Exitosa', '¡Se cambio la contraseña!');
     }

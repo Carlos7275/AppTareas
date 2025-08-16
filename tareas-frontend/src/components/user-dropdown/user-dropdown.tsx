@@ -1,24 +1,28 @@
-import { useState, useRef, useEffect, useCallback, memo } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import "./user-dropdown.css";
 import type { Usuarios } from "../../models/usuarios.model";
-import { AuthService } from "../../services/auth.service";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
+import { authService } from "../../main";
+import { useUser } from "../../providers/user.provider";
 
-const UserAvatar = memo(({ foto, toggle }: { foto: string; toggle: () => void }) => (
-  <img
-    loading="lazy"
-    src={foto}
-    className="user-avatar"
-    onClick={toggle}
-    alt="Usuario"
-  />
-));
+function UserAvatar({ foto, toggle }: { foto: string; toggle: () => void }) {
+  return (
+    <img
+      loading="lazy"
+      src={foto}
+      className="user-avatar"
+      onClick={toggle}
+      alt="Usuario"
+    />
+  );
+}
 
 export default function UserDropdown() {
-  const [usuario, setUsuario] = useState<Usuarios | null>(null);
+  const { usuario, setUsuario } = useUser();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const authService = new AuthService();
+  const navigator = useNavigate();
 
   // Cargar datos del usuario al montar
   useEffect(() => {
@@ -38,7 +42,10 @@ export default function UserDropdown() {
 
   // Cerrar dropdown al hacer clic fuera
   const handleClickOutside = useCallback((event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
       setDropdownOpen(false);
     }
   }, []);
@@ -48,16 +55,7 @@ export default function UserDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [handleClickOutside]);
 
-  // Bloquear scroll de fondo cuando dropdown abierto (móvil)
-  useEffect(() => {
-    if (isDropdownOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-  }, [isDropdownOpen]);
-
-  const toggleDropdown = () => setDropdownOpen(prev => !prev);
+  const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const closeDropdown = () => setDropdownOpen(false);
 
   const handleLogout = async () => {
@@ -66,7 +64,10 @@ export default function UserDropdown() {
     window.location.href = "/login";
   };
 
-  if (!usuario) return <div className="p-2 w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>;
+  if (!usuario)
+    return (
+      <div className="p-2 w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+    );
 
   return (
     <div className="split-button p-2 relative" ref={dropdownRef}>
@@ -76,7 +77,6 @@ export default function UserDropdown() {
         <div
           className="menu-overlay"
           onClick={(e) => {
-            // Cierra solo si se hace click sobre el overlay, no el menú
             if (e.target === e.currentTarget) {
               closeDropdown();
             }
@@ -86,14 +86,21 @@ export default function UserDropdown() {
             <div className="user-info">
               <img src={usuario.foto} alt="Foto usuario" />
               <div>
-                <b>{usuario.nombres} {usuario.apellidos}</b>
+                <b>
+                  {usuario.nombres} {usuario.apellidos}
+                </b>
                 <p>{usuario.correo}</p>
               </div>
             </div>
 
             <hr />
 
-            <button onClick={closeDropdown}>
+            <button
+              onClick={() => {
+                closeDropdown();
+                navigator("configuracion-usuario");
+              }}
+            >
               <span className="material-icons">perm_identity</span>
               Configuración de Usuario
             </button>

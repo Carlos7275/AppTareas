@@ -9,3 +9,4 @@ export class PaisesService extends GenericService {
         return (await this.api.get<Peticion<Paises>>(this.url)).data
     }
 }
+

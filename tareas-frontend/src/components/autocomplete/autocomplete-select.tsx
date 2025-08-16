@@ -9,8 +9,11 @@ interface FormAutocompleteProps<T> {
   options: T[];
   getOptionLabel: (option: T) => string;
   getOptionValue: (option: T) => string | number;
-  imageKey?: keyof T; // campo opcional para mostrar imagen
+  imageKey?: keyof T;
   rules?: any;
+  avatarSize?: number;
+  sx?: object; // para estilos del Autocomplete completo
+  value?:any
 }
 
 export function FormAutocomplete<T>({
@@ -22,27 +25,35 @@ export function FormAutocomplete<T>({
   getOptionLabel,
   getOptionValue,
   imageKey,
-  rules
+  rules,
+  sx,
+  avatarSize = 24,
+  value,
 }: FormAutocompleteProps<T>) {
   return (
     <Controller
       name={name}
       control={control}
+      defaultValue={value}
       rules={rules}
       render={({ field }) => {
-        const selectedOption = options.find(o => getOptionValue(o) === field.value) || null;
+        const selectedOption =
+          options.find((o) => getOptionValue(o) === field.value) || null;
 
         return (
           <Autocomplete
+            sx={{ width: 200, ...sx }} // ancho por defecto 200, sobreescribible
             options={options}
             getOptionLabel={getOptionLabel}
             isOptionEqualToValue={(option, value) =>
               getOptionValue(option) === getOptionValue(value)
             }
             value={selectedOption}
-            onChange={(_, value) => field.onChange(value ? getOptionValue(value) : "")}
+            onChange={(_, value) =>
+              field.onChange(value ? getOptionValue(value) : "")
+            }
             renderOption={(props, option) => {
-              const { key, ...restProps } = props; // separa key para evitar warning
+              const { key, ...restProps } = props;
               return (
                 <Box
                   key={key}
@@ -54,7 +65,7 @@ export function FormAutocomplete<T>({
                     <Avatar
                       src={String(option[imageKey])}
                       alt={getOptionLabel(option)}
-                      sx={{ width: 24, height: 24 }}
+                      sx={{ width: avatarSize, height: avatarSize }}
                     />
                   )}
                   {getOptionLabel(option)}
@@ -76,9 +87,11 @@ export function FormAutocomplete<T>({
                       <Avatar
                         src={String(selectedOption[imageKey])}
                         alt={getOptionLabel(selectedOption)}
-                        sx={{ width: 24, height: 24, mr: 1 }}
+                        sx={{ width: avatarSize, height: avatarSize, mr: 1 }}
                       />
-                    ) : params.InputProps.startAdornment,
+                    ) : (
+                      params.InputProps.startAdornment
+                    ),
                 }}
               />
             )}

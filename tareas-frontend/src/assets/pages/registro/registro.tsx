@@ -18,13 +18,12 @@ import {
   KeyboardBackspace,
   Done,
 } from "@mui/icons-material";
-import { GenerosService } from "../../../services/generos.service";
-import { PaisesService } from "../../../services/paises.service";
 import type { Paises } from "../../../models/paises.model";
 import type { Generos } from "../../../models/generos.model";
 import { FormAutocomplete } from "../../../components/autocomplete/autocomplete-select";
-import { UsuarioService } from "../../../services/usuario.service";
 import Swal from "sweetalert2";
+import { errorHandler } from "../../../services/errorhandler.service";
+import { paisesService, generosService, usuarioService } from "../../../main";
 
 interface FormData {
   nombres: string;
@@ -40,9 +39,6 @@ interface FormData {
 }
 
 export default function Registro() {
-  const generosService = new GenerosService();
-  const paisesService = new PaisesService();
-  const usuarioService = new UsuarioService();
   const navigate = useNavigate();
 
   const [paises, setPaises] = useState<Paises[]>([]);
@@ -62,6 +58,7 @@ export default function Registro() {
     formState: { errors },
     trigger,
   } = useForm<FormData>();
+
   const passwordsMatch = watch("password") === watch("passwordaux");
 
   useEffect(() => {
@@ -74,10 +71,8 @@ export default function Registro() {
 
         setPaises(paisesResp.data as Paises[]);
         setGeneros(generosResp.data as Generos[]);
-      } catch (error) {
-        console.error("Error al obtener datos:", error);
-        setPaises([]);
-        setGeneros([]);
+      } catch (error: any) {
+        errorHandler(error);
       } finally {
         setLoading(false);
       }
@@ -174,8 +169,12 @@ export default function Registro() {
                     label="Fecha de nacimiento"
                     type="date"
                     fullWidth
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                     margin="normal"
-                    InputLabelProps={{ shrink: true }}
                     {...register("fecha_nacimiento", {
                       required: "Ingrese su fecha de nacimiento",
                     })}
@@ -202,6 +201,7 @@ export default function Registro() {
                     getOptionLabel={(o) => o.descripcion}
                     getOptionValue={(o) => o.id}
                     rules={{ required: "Seleccione un género" }}
+                    sx={{ width: "100%" }}
                   />
 
                   <FormAutocomplete
@@ -214,6 +214,7 @@ export default function Registro() {
                     getOptionValue={(o) => o.id}
                     imageKey="foto"
                     rules={{ required: "Seleccione un país" }}
+                    sx={{ width: "100%" }}
                   />
 
                   <div className="botones-step">
@@ -248,14 +249,16 @@ export default function Registro() {
                     })}
                     error={!!errors.password}
                     helperText={errors.password?.message}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={() => setHide(!hide)}>
-                            {hide ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={() => setHide(!hide)}>
+                              {hide ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
                     }}
                   />
                   <TextField
@@ -271,14 +274,16 @@ export default function Registro() {
                       errors.passwordaux?.message ||
                       (!passwordsMatch ? "Las contraseñas no coinciden" : "")
                     }
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={() => setHide2(!hide2)}>
-                            {hide2 ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={() => setHide2(!hide2)}>
+                              {hide2 ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
                     }}
                   />
 

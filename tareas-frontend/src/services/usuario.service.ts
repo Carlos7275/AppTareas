@@ -8,7 +8,13 @@ export class UsuarioService extends GenericService {
         return await this.api.post<Peticion<string>>(`${this.url}crear`, JSON.stringify(data))
     }
 
-    async modificarUsuario(id: number, data: any): Promise<Peticion<string>> {
-        return await this.api.put(`${this.url}modificar/${id}`, JSON.stringify(data)) as Peticion<string>;
+    async modificarUsuario(id: number, data: any) {
+        return (await this.api.put<Peticion<string>>(`${this.url}modificar/${id}`, JSON.stringify(data))).data
+    }
+
+    async cambiarContraseña(data: any) {
+        return (await this.api.post<Peticion<string>>(`${this.url}cambiar-contra/`, JSON.stringify(data))).data
+
     }
 }
+

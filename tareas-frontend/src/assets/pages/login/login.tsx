@@ -4,14 +4,13 @@ import { TextField, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff, Email } from "@mui/icons-material";
 import "animate.css";
 import "./Login.css";
-import { AuthService } from "../../../services/auth.service";
 import Swal from "sweetalert2";
 import { Link } from "react-router";
+import { authService } from "../../../main";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const authService = new AuthService();
   const {
     register,
     handleSubmit,
@@ -36,12 +35,10 @@ export default function Login() {
   return (
     <div className="login-container animate__animated animate__zoomIn">
       <div className="login-card">
-        {/* Columna del formulario */}
         <div className="login-form">
           <h2 className="login-title">Iniciar Sesión</h2>
 
           <form className="form" onSubmit={handleSubmit(onSubmit)}>
-            {/* Input Email */}
             <TextField
               label="Correo"
               variant="outlined"
@@ -61,16 +58,17 @@ export default function Login() {
                   ? errors.correo.message
                   : undefined
               }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Email />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Email />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
-            {/* Input Contraseña */}
             <TextField
               label="Contraseña"
               variant="outlined"
@@ -90,21 +88,22 @@ export default function Login() {
                   ? errors.password.message
                   : undefined
               }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
-            {/* Checkbox */}
             <div className="checkbox-container">
               <input
                 type="checkbox"
@@ -124,7 +123,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Columna de imagen */}
         <div className="login-image">
           <img
             src="/images/imagen.gif"

@@ -4,6 +4,8 @@ import { Link } from "react-router";
 import UserDropdown from "../user-dropdown/user-dropdown";
 
 function Navbar() {
+  const body = document.body;
+
   const [menuActivo, setMenuActivo] = useState(false);
   const [temaOscuro, setTemaOscuro] = useState(
     localStorage.getItem("dark-theme") === "true"
@@ -16,7 +18,12 @@ function Navbar() {
 
   const toggleTema = () => {
     const nuevoTema = !temaOscuro;
+
+    console.log(nuevoTema)
+    body.setAttribute("data-bs-theme", nuevoTema ? "dark" : "light");
+
     setTemaOscuro(nuevoTema);
+
     localStorage.setItem("dark-theme", nuevoTema.toString());
     document.documentElement.classList.toggle("dark-theme", nuevoTema);
   };
@@ -47,6 +54,8 @@ function Navbar() {
   }, [location.pathname]);
 
   useEffect(() => {
+    body.setAttribute("data-bs-theme", temaOscuro ? "dark" : "light");
+
     if (temaOscuro) {
       document.documentElement.classList.add("dark-theme");
     } else {
@@ -85,11 +94,24 @@ function Navbar() {
             Inicio
           </Link>
         </li>
+
+        {isLogin && (
+          <li>
+            <Link
+              to="/dashboard-tareas"
+              className={getLinkClass("/")}
+              onClick={closeMenuOnLinkClick}
+            >
+              Tareas
+            </Link>
+          </li>
+        )}
+
         <li>
           <a onClick={toggleTema} style={{ cursor: "pointer" }}>
             <i
               id="btn_tema"
-              className={`bi ${temaOscuro ? "bi-moon" : "bi-sun"}`}
+              className={`bi ${temaOscuro ? "bi-moon" : "bi-sun"} text-light`}
             ></i>
           </a>
         </li>

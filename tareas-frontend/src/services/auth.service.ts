@@ -2,6 +2,7 @@ import type { Peticion } from "../models/response.model";
 import type { Usuarios } from "../models/usuarios.model";
 import GenericService from "./generic.service";
 export class AuthService extends GenericService {
+
     url = "v1/auth/";
 
     async iniciarSesion(data: any): Promise<Peticion<any>> {
@@ -17,4 +18,9 @@ export class AuthService extends GenericService {
         return (await this.api.get(`${this.url}logout`)).data as Peticion<any>;
 
     }
+
+    async refreshToken() {
+        return (await this.api.get(`${this.url}refresh`)).data as Peticion<any>;
+    }
 }
+

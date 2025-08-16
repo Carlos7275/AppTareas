@@ -1,17 +1,16 @@
-/* Contenedor principal */
 .split-button {
   position: relative;
   display: inline-block;
   z-index: 60;
 }
 
-/* Imagen de usuario */
 .user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  object-fit: cover;
 }
 
 .user-avatar:hover {
@@ -19,13 +18,15 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Menú desplegable */
 .menu {
   position: absolute;
   top: 50px;
   right: 0;
-  width: 240px;
+  width: auto;
+  min-width: 220px;
+  max-width: 300px;
   background-color: white;
+  color: black;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   padding: 12px;
@@ -74,6 +75,8 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
   margin-right: 10px;
 }
 
@@ -142,22 +145,19 @@
   /* Overlay para bloquear scroll y centrar menú */
   .menu-overlay {
     position: fixed;
-    top: 63px; /* justo debajo de la navbar */
+    top: 63px;
     left: 0;
     width: 100vw;
-    height: calc(100vh - 63px);
     background: rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: center;
     align-items: flex-start;
     z-index: 9999;
-    overflow-y: auto;
+    padding-top: 10px;
   }
 
   .menu {
     position: relative;
-    top: 0;
-    right: 0;
     width: 90%;
     max-width: 300px;
     margin-top: 10px;
@@ -168,7 +168,6 @@
     border-radius: 12px;
   }
 
-  /* Bloquear scroll de fondo cuando el menú está abierto */
   body.menu-active {
     overflow: hidden;
   }
