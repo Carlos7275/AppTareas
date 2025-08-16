@@ -31,19 +31,21 @@ export class UsuariosController {
 
     @Post('crear')
     @Public()
-    @ApiBearerAuth()
     @HttpCode(200)
     @ApiBody({ type: CreateUserDTO, required: true })
-    async RegistrarUsuario(@Body() user: CreateUserDTO, @Req() request: Request) {
-        const token = request.headers['authorization']
-            .replace('Bearer ', '')
-            .trim();
+    async RegistrarUsuario(@Body() user: CreateUserDTO, @Req() request: any) {
 
-        if (token != 'null' && token) {
-            const usuario = await this.authService.me(token);
+        const id_usuario = request.user?.id;
+
+
+        if (id_usuario) {
+            const usuario = await this.authService.me(id_usuario);
             user.id_rol = usuario.id_rol === 2 ? 2 : user.id_rol;
         }
-        await this.usuarioService.create(user, true);
+        else {
+            user.id_rol = 2;
+        }
+        await this.usuarioService.create(user);
         return Utils.Response(
             'Operacion Exitosa',
             'Se registro el usuario con exito',

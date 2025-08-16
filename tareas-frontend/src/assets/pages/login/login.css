@@ -1,0 +1,155 @@
+/* Contenedor general */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease;
+}
+
+.dark-theme .login-container {
+  background-color: #121212;
+}
+
+/* Tarjeta de login */
+.login-card {
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+  background-color: #fff;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark-theme .login-card {
+  background-color: #1e1e1e;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* Formulario */
+.login-form {
+  flex: 1 1 400px;
+  padding: 2rem;
+}
+
+.login-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #222;
+  transition: color 0.3s ease;
+}
+
+.dark-theme .login-title {
+  color: #eee;
+}
+
+/* Checkbox */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.checkbox-container input {
+  width: 18px;
+  height: 18px;
+}
+
+/* Botón */
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  font-weight: bold;
+  border-radius: 8px;
+  background-color: #4dabf5;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.login-button:hover {
+  background-color: #339af0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Footer */
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.login-footer a {
+  color: #4dabf5;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Imagen */
+.login-image {
+  flex: 1 1 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-image img {
+  max-width: 100%;
+  border-radius: 16px;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.login-image img:hover {
+  transform: scale(1.03);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+}
+
+/* Inputs y TextFields (dark theme) */
+.MuiInputBase-root {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark-theme .MuiInputBase-root {
+  background-color: #2c2c2c;
+  color: #eee;
+}
+
+.MuiInputLabel-root {
+  transition: color 0.3s ease;
+}
+
+.dark-theme .MuiInputLabel-root {
+  color: #ccc;
+}
+
+.MuiFormHelperText-root {
+  transition: color 0.3s ease;
+}
+
+.dark-theme .MuiFormHelperText-root {
+  color: #bbb;
+}
+
+/* Ajuste responsivo */
+@media (max-width: 992px) {
+  .login-image {
+    display: none;
+  }
+
+  .login-form {
+    flex: 1 1 100%;
+    padding: 1rem;
+  }
+}

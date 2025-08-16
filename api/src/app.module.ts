@@ -15,11 +15,12 @@ import { TareasController } from './controllers/v1/tareas/tareas.controller';
 import { TareasModule } from './controllers/v1/tareas/tareas.module';
 import { ReportesController } from './controllers/v1/reportes/reportes.controller';
 import { ReportesModule } from './controllers/v1/reportes/reportes.module';
+import { PaisesModule } from './controllers/v1/paises/paises.module';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'), 
+      rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/public',
     }),
     AuthModule,
@@ -34,6 +35,7 @@ import { ReportesModule } from './controllers/v1/reportes/reportes.module';
     }),
     UsuariosModule,
     GenerosModule,
+    PaisesModule,
     TareasModule,
     ReportesModule,
   ],

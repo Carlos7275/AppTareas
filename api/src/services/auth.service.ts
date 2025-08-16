@@ -44,7 +44,6 @@ export class AuthService {
             id_rol: user.id_rol,
             rol: user.rol.descripcion,
             telefono: user.detalles.telefono,
-            username: user.username,
         };
 
         return userDto;
@@ -89,7 +88,6 @@ export class AuthService {
             id_rol: user.id_rol,
             rol: user.rol.descripcion,
             telefono: user.detalles.telefono,
-            username: user.username,
             estatus: user.estatus
         };
 

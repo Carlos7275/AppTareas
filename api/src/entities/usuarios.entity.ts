@@ -7,8 +7,6 @@ import { UsuariosDetalle } from './usuarios_detalle.entity';
 export class Usuarios extends GenericEntity {
   @Column({ unique: true })
   correo: string;
-  @Column({ unique: true })
-  username: string;
   @Column()
   password: string;
   @Column({ unique: false })

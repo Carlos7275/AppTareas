@@ -11,6 +11,7 @@ import {
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { Public } from 'src/decorators/public.decorator';
 import { Generos } from 'src/entities/generos.entity';
 import { GenerosService } from 'src/services/generos.service';
@@ -31,6 +32,7 @@ export class GenerosController {
         type: [Generos],
     })
     @UseGuards(CacheInterceptor)
+    @Throttle({ default: { limit: 100, ttl: 60000 } })
     public async ObtenerGeneros() {
         return Utils.Response(
             '¡Operacion Exitosa!',
@@ -48,6 +50,7 @@ export class GenerosController {
         type: Generos,
     })
     @UseGuards(CacheInterceptor)
+    @Throttle({ default: { limit: 100, ttl: 60000 } })
 
     public async ObtenerGenero(@Param('id') id: number) {
         let genero = await this.generosService.findOneById(id);

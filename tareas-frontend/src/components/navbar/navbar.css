@@ -1,0 +1,253 @@
+/* === Reset box-sizing global === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== NAVBAR GENERAL ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 63px;
+  padding: 0 24px;
+  background-color: transparent;
+  box-shadow: none;
+  border-bottom: none;
+  z-index: 999;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease,
+              height 0.4s ease, padding 0.4s ease, color 0.4s ease;
+  color: #222;
+  backdrop-filter: blur(5px);
+}
+
+/* ===== LOGO ===== */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  transition: all 0.4s ease;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
+}
+
+.logo img:hover {
+  filter: drop-shadow(0 3px 10px rgba(0,0,0,0.8));
+  transform: scale(1.05);
+}
+
+.logo-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  transition: color 0.4s ease, transform 0.3s ease;
+}
+
+/* Cambios cuando scrollea */
+.navbar-scrolled .logo-title {
+  color: #ffd965;
+  transform: scale(0.95);
+}
+
+/* Dark theme */
+.dark-theme .logo-title {
+  color: #eee;
+}
+
+/* ===== ITEMS ===== */
+.navbar_items {
+  display: flex;
+  justify-content: flex-end;
+  list-style: none;
+  margin-right: 30px;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.navbar_items li {
+  border-radius: 8px;
+  margin: 0 6px;
+  position: relative;
+}
+
+.navbar_items li a {
+  padding: 8px 16px;
+  text-decoration: none;
+  display: block;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.navbar_items li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #ffd965;
+  transition: width 0.3s ease;
+}
+
+.navbar_items li a:hover::after,
+.navbar_items li.active a::after {
+  width: 100%;
+}
+
+.navbar_items li a:hover,
+.navbar_items li.active a {
+  color: #ffd965;
+}
+
+/* ===== ICONOS ===== */
+.icon {
+  color: inherit;
+  filter: brightness(0.9);
+  transition: all 0.3s ease;
+  width: 28px;
+  height: 28px;
+  font-size: 32px;
+}
+
+.icon:hover {
+  filter: brightness(1.2);
+  transform: scale(1.1);
+}
+
+/* Navbar botón hamburguesa */
+.navbar-button {
+  margin-right: 24px;
+  font-size: 22px;
+  cursor: pointer;
+  display: none;
+  transition: color 0.3s ease;
+  color: #3358ff;
+}
+
+.navbar-button:hover {
+  color: #ffd965;
+}
+
+/* ===== SCROLL ===== */
+.navbar-scrolled {
+  background-color: rgba(22, 22, 22, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  height: 55px;
+  padding: 0 30px;
+  color: #fff;
+  backdrop-filter: blur(8px);
+  border-bottom: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 952px) {
+  .logo img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .logo-title {
+    font-size: 16px;
+  }
+
+  .navbar_items li a {
+    font-size: 15px;
+    padding: 8px 12px;
+  }
+}
+
+/* ===== MENÚ MÓVIL ===== */
+@media screen and (max-width: 858px) {
+  /* Bloquear scroll de fondo cuando el menú está activo */
+  body.menu-active {
+    overflow: hidden;
+  }
+
+  .navbar_items {
+    position: fixed; /* fijo sobre la página */
+    top: 63px; /* justo debajo de la navbar */
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 63px); /* cubrir todo desde navbar hacia abajo */
+    background: rgba(40,40,40,1);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px 0;
+    gap: 10px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    z-index: 1050;
+    transition: max-height 0.35s ease, opacity 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  /* Menú activo */
+  .navbar_items.active {
+    max-height: 1000px; /* suficiente para mostrar todos los items */
+    opacity: 1;
+  }
+
+  
+
+  .navbar_items li a {
+    text-align: center;
+    width: 100%;
+    padding: 12px 0;
+  }
+
+  .navbar_items li a:hover {
+    background-color: #ffd965;
+    color: #222;
+    box-shadow: inset 0 0 0 200px rgba(255,217,101,0.2);
+  }
+
+  /* Mostrar botón hamburguesa */
+  .navbar-button {
+    display: inline-flex;
+    font-size: 26px;
+    padding: 12px 16px;
+  }
+}
+
+/* ===== DARK THEME ===== */
+.dark-theme .navbar {
+  color: #eee;
+}
+
+.dark-theme .navbar-scrolled {
+  background-color: rgba(10, 10, 10, 0.85);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+}
+
+.dark-theme .navbar_items li a:hover {
+  color: #ffd965;
+}

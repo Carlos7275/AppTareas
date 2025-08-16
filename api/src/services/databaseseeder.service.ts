@@ -1270,14 +1270,7 @@ export class DatabaseSeederService {
         codigotelefono: '+976',
         foto: 'https://flagcdn.com/160x120/mn.png',
       },
-      {
-        id: 152,
-        nombre: 'Mongolia',
-        nombrecorto: 'MNG',
-        codigopais: 'MNG',
-        codigotelefono: '+976',
-        foto: 'https://flagcdn.com/160x120/mn.png',
-      },
+     
       {
         id: 153,
         nombre: 'Montenegro',

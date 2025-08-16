@@ -21,7 +21,7 @@ export class UsuariosService extends GenericService<Usuarios> {
         super(usuariosRepository);
     }
 
-    async create(usuarioDto: CreateUserDTO, verificado = true): Promise<any> {
+    async create(usuarioDto: CreateUserDTO): Promise<any> {
         const queryRunner =
             this.usuariosRepository.manager.connection.createQueryRunner();
         await queryRunner.connect();
@@ -40,7 +40,6 @@ export class UsuariosService extends GenericService<Usuarios> {
             const usuario = this.usuariosRepository.create({
                 correo,
                 password: password != '' ? hashedPassword : '',
-                username,
                 id_rol,
                 estatus,
             });
@@ -129,7 +128,6 @@ export class UsuariosService extends GenericService<Usuarios> {
             id_rol: user.id_rol,
             rol: user.rol.descripcion,
             telefono: user.detalles.telefono,
-            username: user.username,
             estatus: user.estatus
         };
 
@@ -154,7 +152,6 @@ export class UsuariosService extends GenericService<Usuarios> {
             id_rol: user.id_rol,
             rol: user.rol.descripcion,
             telefono: user.detalles.telefono,
-            username: user.username,
         };
 
         return userDto;
@@ -229,7 +226,6 @@ export class UsuariosService extends GenericService<Usuarios> {
             created: user.created,
             rol: user.rol.descripcion,
             telefono: user.detalles.telefono,
-            username: user.username,
             estatus: user.estatus
         }));
 
