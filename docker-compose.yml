@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mariadb
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: tareas
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  api-nestjs:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api-nestjs
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+    environment:
+      NODE_ENV: production  
+
+  app-react:
+    build: ./tareas-frontend
+    container_name: tareas-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api-nestjs
+    environment:
+      NODE_ENV: production  
+
+volumes:
+  mysql_data:

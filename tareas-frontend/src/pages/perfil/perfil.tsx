@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Usuarios } from "../../../models/usuarios.model";
+import type { Usuarios } from "../../models/usuarios.model";
 import {
   Box,
   Button,
@@ -9,14 +9,14 @@ import {
 } from "@mui/material";
 import { Email, Save } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
-import type { Generos } from "../../../models/generos.model";
-import type { Paises } from "../../../models/paises.model";
-import { errorHandler } from "../../../services/errorhandler.service";
-import { generosService, paisesService, usuarioService } from "../../../main";
-import { FormAutocomplete } from "../../../components/autocomplete/autocomplete-select";
-import { useImagePreview } from "../../../hooks/useImagePreview";
+import type { Generos } from "../../models/generos.model";
+import type { Paises } from "../../models/paises.model";
+import { errorHandler } from "../../services/errorhandler.service";
+import { generosService, paisesService, usuarioService } from "../../main";
+import { FormAutocomplete } from "../../components/autocomplete/autocomplete-select";
+import { useImagePreview } from "../../hooks/useImagePreview";
 import Swal from "sweetalert2";
-import { useUser } from "../../../providers/user.provider";
+import { useUser } from "../../providers/user.provider";
 
 export default function Perfil() {
   const {
@@ -145,6 +145,22 @@ export default function Perfil() {
                     type="date"
                   ></TextField>
 
+                  <TextField
+                    label="Telefono"
+                    margin="normal"
+                    className="p-2"
+                    defaultValue={usuario.telefono}
+                    {...register("telefono", {
+                      required: "Ingrese la fecha de nacimiento",
+                      pattern: {
+                        value: /^[0-9]{10}$/, 
+                        message: "El teléfono debe tener 10 números",
+                      },
+                    })}
+                    error={!!errors.telefono}
+                    helperText={errors.telefono?.message}
+                    type="tel"
+                  ></TextField>
                   <FormAutocomplete
                     name="id_genero"
                     label="Género"

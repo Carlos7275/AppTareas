@@ -1,5 +1,5 @@
 // src/assets/pages/error404/Error404.jsx
-import "./Error404.css";
+import "./error404.css";
 
 export default function Error404() {
   return (

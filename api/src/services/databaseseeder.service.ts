@@ -7,6 +7,7 @@ import { Usuarios } from 'src/entities/usuarios.entity';
 import { UsuariosDetalle } from 'src/entities/usuarios_detalle.entity';
 import { Paises } from 'src/entities/paises.entity';
 import * as bcrypt from 'bcrypt';
+import { TipoReporte } from 'src/entities/tipo.reporte.entity';
 
 @Injectable()
 export class DatabaseSeederService {
@@ -15,7 +16,7 @@ export class DatabaseSeederService {
   private readonly usuarioRepository;
   private readonly usuarioDetalleRepository;
   private readonly paisRepository;
-
+  private readonly tipoReportes;
 
   constructor(private readonly connection: DataSource) {
     this.roleRepository = this.connection.getRepository(Roles);
@@ -24,6 +25,7 @@ export class DatabaseSeederService {
     this.usuarioDetalleRepository =
       this.connection.getRepository(UsuariosDetalle);
     this.paisRepository = this.connection.getRepository(Paises);
+    this.tipoReportes = this.connection.getRepository(TipoReporte);
 
   }
 
@@ -35,6 +37,7 @@ export class DatabaseSeederService {
       await this.seedRoles();
       await this.seedGeneros();
       await this.seedAdminUser();
+      await this.seedTiposReportes();
     }
   }
 
@@ -1270,7 +1273,7 @@ export class DatabaseSeederService {
         codigotelefono: '+976',
         foto: 'https://flagcdn.com/160x120/mn.png',
       },
-     
+
       {
         id: 153,
         nombre: 'Montenegro',
@@ -2035,4 +2038,11 @@ export class DatabaseSeederService {
     await this.usuarioDetalleRepository.save(adminDetalle);
   }
 
+  private async seedTiposReportes() {
+    const reportes = [{
+      id: 1,
+      nombre: "Reporte de tareas"
+    }]
+    await this.tipoReportes.save(reportes);
+  }
 }

@@ -1,34 +1,39 @@
-import { Optional } from "@nestjs/common";
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsNotEmpty, IsOptional, IsEnum, IsDateString, ValidateIf } from "class-validator";
 import { Prioridad } from "src/enums/prioridad.enum";
 
 export default class CreateTareasDTO {
-    @ApiProperty()
-    @IsNotEmpty({ message: "No deje vácio el nombre de la tarea." })
-    nombre: string;
+  @ApiProperty()
+  @IsNotEmpty({ message: "No deje vacío el nombre de la tarea." })
+  nombre: string;
 
-    @ApiProperty()
-    @Optional()
-    descripcion: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty({ message: "No deje vacío la descripción de la tarea." })
+  descripcion?: string;
 
+  @ApiProperty({ enum: Prioridad })
+  @IsEnum(Prioridad, { message: "La prioridad seleccionada no es válida." })
+  prioridad: Prioridad;
 
-    @ApiProperty({ enum: Prioridad })
-    @IsNotEmpty({ message: "No deje vácia la prioridad de la tarea." })
-    prioridad: Prioridad
+  @ApiPropertyOptional({ type: 'string', format: 'date-time' })
+  @IsOptional()
+  @IsDateString({}, { message: "Fecha de inicio inválida." })
+  fecha_inicio?: string;
 
-    @ApiProperty({ type: 'string' })
-    @Optional()
-    fecha_inicio: Date;
+  @ApiPropertyOptional({ type: 'string', format: 'date-time' })
+  @IsOptional()
+  @IsDateString({}, { message: "Fecha de fin inválida." })
+  @ValidateIf(o => o.fecha_inicio)
+  fecha_fin?: string;
 
-    @ApiProperty({ type: 'string' })
-    @Optional()
-    fecha_fin: Date;
+  @ApiPropertyOptional({ type: 'boolean' })
+  @IsOptional()
+  completado?: boolean;
 
-
-    @ApiProperty({ type: 'boolean' })
-    @Optional()
-    completada: boolean;
-
-
+  @ApiPropertyOptional({ type: 'string', format: 'date-time' })
+  @IsOptional()
+  @IsDateString({}, { message: "Fecha de terminación inválida." })
+  @ValidateIf(o => o.fecha_inicio || o.fecha_fin)
+  fecha_terminacion?: string;
 }

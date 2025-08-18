@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff, Save } from "@mui/icons-material";
 import Swal from "sweetalert2";
-import { usuarioService } from "../../../main";
+import { usuarioService } from "../../main";
 
 interface FormValues {
   Contraseña: string;

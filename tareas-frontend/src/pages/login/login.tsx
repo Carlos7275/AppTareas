@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff, Email } from "@mui/icons-material";
 import "animate.css";
-import "./Login.css";
+import "./login.css";
 import Swal from "sweetalert2";
 import { Link } from "react-router";
-import { authService } from "../../../main";
+import { authService } from "../../main";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);

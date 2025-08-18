@@ -14,6 +14,15 @@ import { UsuariosService } from 'src/services/usuarios.service';
 import { LocalStrategy } from 'src/strategy/local.strategy';
 import { JwtStrategy } from 'src/strategy/jwt.strategy';
 import { AuthService } from 'src/services/auth.service';
+import { ConfigService } from '@nestjs/config';
+import { ClientsModule } from '@nestjs/microservices';
+import { rabbitMQConfig } from 'src/config/rabbit.conf';
+import { ReportesWorker } from 'workers/reporte.worker';
+import { RabbitMQService } from 'src/services/rabbitmq.service';
+import { ReportesService } from 'src/services/reporte.service';
+import { Reporte } from 'src/entities/reporte.entity';
+import { Tareas } from 'src/entities/tareas.entity';
+import { TareasService } from 'src/services/tareas.service';
 
 @Module({
     imports: [
@@ -40,6 +49,14 @@ import { AuthService } from 'src/services/auth.service';
             },
         }),
 
+        ClientsModule.registerAsync([
+            {
+                name: 'RABBITMQ_SERVICE',
+                inject: [ConfigService],
+                useFactory: (configService: ConfigService) => rabbitMQConfig(configService),
+            },
+        ]),
+
 
         RedisModule.forRoot({
             type: 'single',
@@ -56,11 +73,12 @@ import { AuthService } from 'src/services/auth.service';
         }),
 
 
-        TypeOrmModule.forFeature([Usuarios, UsuariosDetalle
+        TypeOrmModule.forFeature([Usuarios, UsuariosDetalle, Reporte, Tareas
         ]),
 
 
     ],
+    controllers: [ReportesWorker],
     providers: [
         JwtStrategy,
         LocalStrategy,
@@ -68,14 +86,21 @@ import { AuthService } from 'src/services/auth.service';
         UsuariosService,
         RedisService,
         JwtService,
-        AuthService
+        AuthService,
+        ReportesWorker,
+        RabbitMQService,
+        ReportesService,
+        TareasService,
     ],
     exports: [
         ListaNegraService,
         UsuariosService,
         RedisService,
         JwtService,
-        AuthService
+        AuthService,
+        ReportesWorker,
+        TareasService
+
     ],
 })
 export class CommonModule { }

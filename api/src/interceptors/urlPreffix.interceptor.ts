@@ -8,7 +8,7 @@ import { Observable, map } from 'rxjs';
 
 @Injectable()
 export class UrlPrefixInterceptor implements NestInterceptor {
-    constructor(private readonly fields: string[] = ['foto', 'logo',]) { }
+    constructor(private readonly fields: string[] = ['foto', 'logo', "nombreArchivo",]) { }
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const request = context.switchToHttp().getRequest();

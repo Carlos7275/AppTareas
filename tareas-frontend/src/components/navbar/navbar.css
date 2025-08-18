@@ -19,12 +19,12 @@
   height: 63px;
   padding: 0 24px;
   background-color: transparent;
+  color: white; /* texto claro por defecto */
   box-shadow: none;
   border-bottom: none;
   z-index: 999;
   transition: background-color 0.4s ease, box-shadow 0.4s ease,
               height 0.4s ease, padding 0.4s ease, color 0.4s ease;
-  color: #222;
   backdrop-filter: blur(5px);
 }
 
@@ -43,13 +43,12 @@
 }
 
 .logo img {
-  width: 50px;
-  height: 50px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
   transition: all 0.4s ease;
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
 }
 
 .logo img:hover {
@@ -60,19 +59,7 @@
 .logo-title {
   font-size: 20px;
   font-weight: 700;
-  color: white;
   transition: color 0.4s ease, transform 0.3s ease;
-}
-
-/* Cambios cuando scrollea */
-.navbar-scrolled .logo-title {
-  color: #ffd965;
-  transform: scale(0.95);
-}
-
-/* Dark theme */
-.dark-theme .logo-title {
-  color: #eee;
 }
 
 /* ===== ITEMS ===== */
@@ -100,7 +87,7 @@
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.05em;
-  color: white;
+  color: inherit;
   transition: all 0.3s ease;
 }
 
@@ -156,13 +143,25 @@
 
 /* ===== SCROLL ===== */
 .navbar-scrolled {
-  background-color: rgba(22, 22, 22, 0.9);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  background-color: rgba(255, 253, 253, 0.548); /* fondo blanco al hacer scroll */
+  color: #222;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   height: 55px;
   padding: 0 30px;
-  color: #fff;
   backdrop-filter: blur(8px);
   border-bottom: none;
+}
+
+.navbar-scrolled .logo-title,
+.navbar-scrolled .navbar_items li a,
+.navbar-scrolled .icon,
+.navbar-scrolled .navbar-button {
+  color: #222;
+}
+
+.navbar-scrolled .navbar_items li a:hover,
+.navbar-scrolled .navbar_items li.active a {
+  color: #ffd965;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -184,17 +183,16 @@
 
 /* ===== MENÚ MÓVIL ===== */
 @media screen and (max-width: 858px) {
-  /* Bloquear scroll de fondo cuando el menú está activo */
   body.menu-active {
     overflow: hidden;
   }
 
   .navbar_items {
-    position: fixed; /* fijo sobre la página */
-    top: 63px; /* justo debajo de la navbar */
+    position: fixed;
+    top: 63px;
     left: 0;
     width: 100%;
-    height: calc(100vh - 63px); /* cubrir todo desde navbar hacia abajo */
+    height: calc(100vh - 63px);
     background: rgba(40,40,40,1);
     flex-direction: column;
     justify-content: flex-start;
@@ -210,13 +208,10 @@
     opacity: 0;
   }
 
-  /* Menú activo */
   .navbar_items.active {
-    max-height: 1000px; /* suficiente para mostrar todos los items */
+    max-height: 1000px;
     opacity: 1;
   }
-
-  
 
   .navbar_items li a {
     text-align: center;
@@ -230,7 +225,6 @@
     box-shadow: inset 0 0 0 200px rgba(255,217,101,0.2);
   }
 
-  /* Mostrar botón hamburguesa */
   .navbar-button {
     display: inline-flex;
     font-size: 26px;
@@ -239,15 +233,21 @@
 }
 
 /* ===== DARK THEME ===== */
-.dark-theme .navbar {
+
+
+.dark-theme .navbar-scrolled {
+  background-color:#212529b4;
   color: #eee;
 }
 
-.dark-theme .navbar-scrolled {
-  background-color: rgba(10, 10, 10, 0.85);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+.dark-theme .logo-title,
+.dark-theme .navbar_items li a,
+.dark-theme .icon,
+.dark-theme .navbar-button {
+  color: #eee;
 }
 
-.dark-theme .navbar_items li a:hover {
+.dark-theme .navbar_items li a:hover,
+.dark-theme .navbar_items li.active a {
   color: #ffd965;
 }

@@ -4,10 +4,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as packageJson from '../package.json';
 import * as compression from 'compression';
 import { ErrorFilter } from './filters/error.filter';
+import { MicroserviceOptions } from '@nestjs/microservices';
+import { rabbitMQConfig } from './config/rabbit.conf';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const allowedUrls = [process.env.FRONT_URL];
+  const allowedUrls = JSON.parse(process.env.FRONT_URL);
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
@@ -38,7 +41,8 @@ async function bootstrap() {
   app.enableCors({
     origin: allowedUrls,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type,Authorization,skip,*',
+    allowedHeaders: 'Content-Type,Authorization,skip',
+    exposedHeaders: ['Content-Disposition'],
     preflightContinue: false,
     credentials: true,
   });
@@ -46,6 +50,18 @@ async function bootstrap() {
 
   app.use(compression())
 
+  const configService = app.get(ConfigService);
+
+  const microserviceOptions = rabbitMQConfig(configService);
+
+  microserviceOptions.options = {
+    ...microserviceOptions.options,
+    prefetchCount: 5,
+  };
+
+  app.connectMicroservice<MicroserviceOptions>(microserviceOptions);
+
+  await app.startAllMicroservices();
   await app.listen(process.env.PORT ?? 3000);
 
 

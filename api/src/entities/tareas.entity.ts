@@ -15,17 +15,17 @@ export class Tareas extends GenericEntity {
         enum: Prioridad,
         default: Prioridad.NORMAL,
     })
+    prioridad: Prioridad
 
     @Column()
     id_usuario: number
-    prioridad: Prioridad
-    @Column()
+    @Column({ nullable: true })
     fecha_inicio: Date;
 
     @Column()
     fecha_fin: Date;
 
-    @Column()
+    @Column({ nullable: true })
     fecha_terminado: Date
     @Column()
     completado: boolean;

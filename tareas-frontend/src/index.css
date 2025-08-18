@@ -159,3 +159,19 @@
   color: white;
 }
 
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.checkbox-container input {
+  width: 18px;
+  height: 18px;
+}
+
+
+.swal2-container {
+  z-index: 10000!important;
+}

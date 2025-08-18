@@ -26,6 +26,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
+    "@nestjs/microservices": "^11.1.6",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/serve-static": "^5.0.3",
@@ -33,12 +34,15 @@
     "@nestjs/throttler": "^6.4.0",
     "@nestjs/typeorm": "^11.0.0",
     "@types/passport-local": "^1.0.38",
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.8",
     "bcrypt": "^6.0.0",
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
     "class-validator-i18n": "^1.1.0",
     "compression": "^1.8.1",
     "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
     "ioredis": "^5.7.0",
     "mysql": "^2.18.1",
     "passport": "^0.7.0",
@@ -48,7 +52,8 @@
     "rxjs": "^7.8.1",
     "swagger": "^0.7.5",
     "typeorm": "^0.3.25",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "xlsx-template": "^1.4.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

@@ -50,17 +50,6 @@
 }
 
 /* Checkbox */
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.checkbox-container input {
-  width: 18px;
-  height: 18px;
-}
 
 /* Botón */
 .login-button {

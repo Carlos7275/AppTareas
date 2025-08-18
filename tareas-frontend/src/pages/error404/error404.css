@@ -58,12 +58,12 @@ p {
 
 /* Dark theme styles */
 .dark-theme .error-page {
-  background: #1e1e2f;
+  background: #212529;
   color: #e0e0e0;
 }
 
 .dark-theme .error-content {
-  background: #2c2c3a;
+  background: #212529;
   box-shadow: 0 8px 25px rgba(0,0,0,0.6);
 }
 

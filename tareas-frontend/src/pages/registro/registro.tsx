@@ -18,12 +18,12 @@ import {
   KeyboardBackspace,
   Done,
 } from "@mui/icons-material";
-import type { Paises } from "../../../models/paises.model";
-import type { Generos } from "../../../models/generos.model";
-import { FormAutocomplete } from "../../../components/autocomplete/autocomplete-select";
+import type { Paises } from "../../models/paises.model";
+import type { Generos } from "../../models/generos.model";
+import { FormAutocomplete } from "../../components/autocomplete/autocomplete-select";
 import Swal from "sweetalert2";
-import { errorHandler } from "../../../services/errorhandler.service";
-import { paisesService, generosService, usuarioService } from "../../../main";
+import { errorHandler } from "../../services/errorhandler.service";
+import { paisesService, generosService, usuarioService } from "../../main";
 
 interface FormData {
   nombres: string;

@@ -91,8 +91,11 @@ export abstract class GenericService<Entity extends GenericEntity> {
         }
 
         queryBuilder.select([...selectFields, ...relationSelectFields]);
-        queryBuilder.take(limit);
-        queryBuilder.skip((page - 1) * limit);
+        if (limit > 0) {
+            queryBuilder.take(limit);
+            queryBuilder.skip((page - 1) * limit);
+
+        }
 
         if (filters?.length) {
             let filterIndex = 0;

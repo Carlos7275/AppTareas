@@ -10,18 +10,26 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useTokenRefresher } from "./hooks/useTokenRefresher";
 import { UserProvider } from "./providers/user.provider";
+import InicioTareas from "./pages/inicio-tareas/inicio-tareas";
+import Tareas from "./pages/tareas/tareas";
 
-// ✅ Lazy imports
-const Inicio = lazy(() => import("./assets/pages/inicio/inicio"));
-const Login = lazy(() => import("./assets/pages/login/login"));
-const Registro = lazy(() => import("./assets/pages/registro/registro"));
-const Error404 = lazy(() => import("./assets/pages/error404/error404"));
-const Error500 = lazy(() => import("./assets/pages/error500/error500"));
-const DashboardTareas = lazy(() => import("./assets/pages/dashboard-tareas/dashboard-tareas"));
-const ConfiguracionUsuario = lazy(() => import("./assets/pages/configuracion-usuario/configuracion-usuario"));
-const Perfil = lazy(() => import("./assets/pages/perfil/perfil"));
-const CambiarContra = lazy(() => import("./assets/pages/cambiar-contra/cambiar-contra"));
+const Inicio = lazy(() => import("./pages/inicio/inicio"));
+const Login = lazy(() => import("./pages/login/login"));
+const Registro = lazy(() => import("./pages/registro/registro"));
+const Error404 = lazy(() => import("./pages/error404/error404"));
+const Error500 = lazy(() => import("./pages/error500/error500"));
+const DashboardTareas = lazy(
+  () => import("./pages/dashboard-tareas/dashboard-tareas")
+);
+const ConfiguracionUsuario = lazy(
+  () => import("./pages/configuracion-usuario/configuracion-usuario")
+);
+const Perfil = lazy(() => import("./pages/perfil/perfil"));
+const CambiarContra = lazy(
+  () => import("./pages/cambiar-contra/cambiar-contra")
+);
 
+const DescargasLazy = lazy(() => import("./pages/descargas/descargas"));
 function App() {
   useTokenRefresher();
 
@@ -51,8 +59,9 @@ function App() {
       <UserProvider>
         <Navbar />
         <div id="contenido">
-          {/* Suspense para mostrar loading mientras carga cada página */}
-          <Suspense fallback={<div className="text-center p-5">Cargando...</div>}>
+          <Suspense
+            fallback={<div className="text-center p-5">Cargando...</div>}
+          >
             <Routes>
               <Route path="/" element={<Inicio />} />
 
@@ -81,7 +90,12 @@ function App() {
                     <DashboardTareas />
                   </ProtectedRoute>
                 }
-              />
+              >
+                <Route path="inicio" element={<InicioTareas />} />
+                <Route path="tareas" element={<Tareas />} />
+                <Route path="descargas" element={<DescargasLazy />}></Route>
+                <Route index element={<Navigate to="inicio" replace />} />
+              </Route>
 
               <Route
                 path="configuracion-usuario"

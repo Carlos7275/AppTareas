@@ -1,8 +1,8 @@
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import ReactDOM from "react-dom/client";
-import Error404 from "../assets/pages/error404/error404";
-import Error500 from "../assets/pages/error500/error500";
+import Error404 from "../pages/error404/error404";
+import Error500 from "../pages/error500/error500";
 import React from "react";
 
 export const errorHandler = (error: AxiosError) => {

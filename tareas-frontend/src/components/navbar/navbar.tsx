@@ -19,7 +19,6 @@ function Navbar() {
   const toggleTema = () => {
     const nuevoTema = !temaOscuro;
 
-    console.log(nuevoTema)
     body.setAttribute("data-bs-theme", nuevoTema ? "dark" : "light");
 
     setTemaOscuro(nuevoTema);
@@ -111,7 +110,7 @@ function Navbar() {
           <a onClick={toggleTema} style={{ cursor: "pointer" }}>
             <i
               id="btn_tema"
-              className={`bi ${temaOscuro ? "bi-moon" : "bi-sun"} text-light`}
+              className={`bi ${temaOscuro ? "bi-moon" : "bi-sun"}`}
             ></i>
           </a>
         </li>
