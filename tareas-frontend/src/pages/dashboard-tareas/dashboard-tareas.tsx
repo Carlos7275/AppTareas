@@ -43,7 +43,7 @@ export default function Admin() {
     <>
       <div
         ref={sidebarRef}
-        className={`sidebar shadow rounded-1 ${sidenavActivado ? "open" : ""}`}
+        className={`sidebar shadow rounded-1  ${sidenavActivado ? "open" : ""}`}
         id="sidebar"
       >
         <i
@@ -82,7 +82,7 @@ export default function Admin() {
         </ul>
       </div>
 
-      <div className="home-section">
+      <div className="home-section animate__animated animate__fadeIn">
         <div className="container" style={{ marginTop: "50px" }}>
           <Outlet />
         </div>

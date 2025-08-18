@@ -23,7 +23,12 @@ import type { Generos } from "../../models/generos.model";
 import { FormAutocomplete } from "../../components/autocomplete/autocomplete-select";
 import Swal from "sweetalert2";
 import { errorHandler } from "../../services/errorhandler.service";
-import { paisesService, generosService, usuarioService } from "../../main";
+import {
+  paisesService,
+  generosService,
+  usuarioService,
+  titleService,
+} from "../../main";
 
 interface FormData {
   nombres: string;
@@ -60,6 +65,7 @@ export default function Registro() {
   } = useForm<FormData>();
 
   const passwordsMatch = watch("password") === watch("passwordaux");
+  titleService.setTitle("Registrarse en Todolist");
 
   useEffect(() => {
     setLoading(true);

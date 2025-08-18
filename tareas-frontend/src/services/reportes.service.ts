@@ -3,7 +3,7 @@ import type { Peticion } from "../models/response.model";
 import GenericService from "./generic.service";
 
 export class ReporteService extends GenericService {
-    url = "v1/reportes/"
+    private readonly url = "v1/reportes/"
 
 
     async solicitarReporte(data: any) {

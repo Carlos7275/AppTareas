@@ -12,6 +12,8 @@ import { useTokenRefresher } from "./hooks/useTokenRefresher";
 import { UserProvider } from "./providers/user.provider";
 import InicioTareas from "./pages/inicio-tareas/inicio-tareas";
 import Tareas from "./pages/tareas/tareas";
+import { CircularProgress } from "@mui/material";
+import Footer from "./components/footer/footer";
 
 const Inicio = lazy(() => import("./pages/inicio/inicio"));
 const Login = lazy(() => import("./pages/login/login"));
@@ -60,7 +62,19 @@ function App() {
         <Navbar />
         <div id="contenido">
           <Suspense
-            fallback={<div className="text-center p-5">Cargando...</div>}
+            fallback={
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100vh",
+                  width: "100%",
+                }}
+              >
+                <CircularProgress />
+              </div>
+            }
           >
             <Routes>
               <Route path="/" element={<Inicio />} />
@@ -116,6 +130,7 @@ function App() {
             </Routes>
           </Suspense>
         </div>
+        <Footer />
       </UserProvider>
 
       <ToastContainer position="bottom-right" autoClose={3000} />

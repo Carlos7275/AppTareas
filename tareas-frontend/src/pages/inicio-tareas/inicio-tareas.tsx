@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Estadisticas_Tareas } from "../../models/estadisticas-tareas";
 import Swal from "sweetalert2";
-import { tareasService } from "../../main";
+import { tareasService, titleService } from "../../main";
 import {
   FaTasks,
   FaCheckCircle,
@@ -13,9 +13,21 @@ import {
 import { useNavigate } from "react-router";
 import { CircularProgress } from "@mui/material";
 
+interface Contador {
+  total_tareas: number;
+  tareas_completadas: number;
+  tareas_pendientes: number;
+  porcentaje_completado: number;
+  leve: number;
+  normal: number;
+  mediana: number;
+  alta: number;
+  proximas_a_expirar: number;
+}
+
 export default function InicioTareas() {
   const [estadisticas, setEstadisticas] = useState<Estadisticas_Tareas>();
-  const [contador, setContador] = useState({
+  const [contador, setContador] = useState<Contador>({
     total_tareas: 0,
     tareas_completadas: 0,
     tareas_pendientes: 0,
@@ -35,6 +47,7 @@ export default function InicioTareas() {
 
   useEffect(() => {
     if (!estadisticas) return;
+
     const duration = 1000;
     const steps = 50;
     const increment = (valor: number) => valor / steps;
@@ -57,9 +70,7 @@ export default function InicioTareas() {
         ),
         porcentaje_completado: Math.min(
           estadisticas.porcentaje_completado,
-          Math.floor(
-            increment(estadisticas.porcentaje_completado) * currentStep
-          )
+          Math.floor(increment(estadisticas.porcentaje_completado) * currentStep)
         ),
         leve: Math.min(
           estadisticas.leve,
@@ -134,46 +145,60 @@ export default function InicioTareas() {
     if (filtros.prioridad) params.append("prioridad", filtros.prioridad);
     navigate(`/dashboard-tareas/tareas?${params.toString()}`);
   };
+
   if (!estadisticas) {
     return (
-      <p className="text-center text-muted mt-4"><CircularProgress/></p>
+      <p className="text-center text-muted mt-4">
+        <CircularProgress />
+      </p>
     );
   }
 
+  const estadisticasPrincipales = [
+    {
+      icon: <FaTasks />,
+      tipo: "total",
+      valor: contador.total_tareas,
+      color: "primary",
+      filtros: {},
+    },
+    {
+      icon: <FaCheckCircle />,
+      tipo: "completadas",
+      valor: contador.tareas_completadas,
+      color: "success",
+      filtros: { estado: "C" },
+    },
+    {
+      icon: <FaClock />,
+      tipo: "pendientes",
+      valor: contador.tareas_pendientes,
+      color: "danger",
+      filtros: { estado: "N" },
+    },
+    {
+      icon: <FaCalendarAlt />,
+      tipo: "expiran",
+      valor: contador.proximas_a_expirar,
+      color: "warning",
+      filtros: { estado: "N" },
+    },
+  ];
+
+  const prioridades = [
+    { prio: "Leve", color: "secondary" },
+    { prio: "Normal", color: "primary" },
+    { prio: "Mediana", color: "warning" },
+    { prio: "Alta", color: "danger" },
+  ];
+
+    titleService.setTitle("Tareas - Inicio");
+  
+
   return (
-    <div className="container mt-4">
+    <div className="container animate__animated animate__zoomIn mt-4">
       <div className="row g-3">
-        {/* Estadísticas principales con botones */}
-        {[
-          {
-            icon: <FaTasks />,
-            tipo: "total",
-            valor: contador.total_tareas,
-            color: "primary",
-            filtros: {},
-          },
-          {
-            icon: <FaCheckCircle />,
-            tipo: "completadas",
-            valor: contador.tareas_completadas,
-            color: "success",
-            filtros: { estado: "C" },
-          },
-          {
-            icon: <FaClock />,
-            tipo: "pendientes",
-            valor: contador.tareas_pendientes,
-            color: "danger",
-            filtros: { estado: "N" },
-          },
-          {
-            icon: <FaCalendarAlt />,
-            tipo: "expiran",
-            valor: contador.proximas_a_expirar,
-            color: "warning",
-            filtros: { estado: "N" },
-          },
-        ].map((item, i) => (
+        {estadisticasPrincipales.map((item, i) => (
           <div key={i} className="col-12 col-md-6 col-lg-3">
             <div
               className={`alert alert-${item.color} shadow-sm rounded-4 d-flex flex-column`}
@@ -183,13 +208,11 @@ export default function InicioTareas() {
                 <span className="me-3 fs-3">{item.icon}</span>
                 <div>
                   <strong>{item.tipo.toUpperCase()}</strong>
-                  <div className="small">
-                    {generarMensaje(item.tipo, item.valor)}
-                  </div>
+                  <div className="small">{generarMensaje(item.tipo, item.valor)}</div>
                 </div>
               </div>
               <button
-                className="btn btn-sm  border mt-auto"
+                className="btn btn-sm border mt-auto"
                 onClick={() => irATareas(item.filtros)}
               >
                 Ver Tareas
@@ -198,15 +221,8 @@ export default function InicioTareas() {
           </div>
         ))}
 
-        {/* Prioridades con botones */}
-        {[
-          { prio: "Leve", color: "secondary" },
-          { prio: "Normal", color: "primary" },
-          { prio: "Mediana", color: "warning" },
-          { prio: "Alta", color: "danger" },
-        ].map((item, i) => {
-          const value =
-            contador[item.prio.toLowerCase() as keyof typeof contador];
+        {prioridades.map((item, i) => {
+          const value = contador[item.prio.toLowerCase() as keyof Contador];
           return (
             <div key={i} className="col-6 col-md-3">
               <div
@@ -217,9 +233,7 @@ export default function InicioTareas() {
                   <FaExclamationTriangle className="me-2" />
                   <div>
                     <strong>{item.prio}</strong>
-                    <div className="small">
-                      {generarMensaje("prioridad", value)}
-                    </div>
+                    <div className="small">{generarMensaje("prioridad", value)}</div>
                   </div>
                 </div>
                 <button
@@ -233,7 +247,6 @@ export default function InicioTareas() {
           );
         })}
 
-        {/* Porcentaje completado */}
         <div className="col-12">
           <div
             className="alert alert-info d-flex align-items-center shadow-sm rounded-4"

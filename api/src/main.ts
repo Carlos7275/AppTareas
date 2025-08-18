@@ -22,7 +22,7 @@ async function bootstrap() {
         status: 500,
         description: 'Error interno en el servidor',
       })
-      .setTitle('Api Tareas')
+      .setTitle('TODOLIST API')
       .setDescription('Api de tareas')
       .setVersion(packageJson.version)
       .addBearerAuth({

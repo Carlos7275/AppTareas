@@ -1,9 +1,9 @@
 import { jwtDecode } from "jwt-decode";
 
 interface JWTPayload {
-  exp: number; // tiempo de expiración en segundos
+  exp: number;
   iat?: number;
-  [key: string]: any; // otros campos que pueda tener tu token
+  [key: string]: any;
 }
 
 export const isTokenExpired = (token: string | null): boolean => {
@@ -11,10 +11,10 @@ export const isTokenExpired = (token: string | null): boolean => {
 
   try {
     const decoded = jwtDecode<JWTPayload>(token);
-    const now = Math.floor(Date.now() / 1000); // tiempo actual en segundos
-    return decoded.exp < now; // true si expiró
+    const now = Math.floor(Date.now() / 1000);
+    return decoded.exp < now;
   } catch (error) {
     console.error("Error decodificando token:", error);
-    return true; // si falla, tratamos el token como expirado
+    return true;
   }
 };

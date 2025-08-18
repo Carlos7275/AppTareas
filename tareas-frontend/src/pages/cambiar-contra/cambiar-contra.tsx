@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff, Save } from "@mui/icons-material";
 import Swal from "sweetalert2";
-import { usuarioService } from "../../main";
+import { titleService, usuarioService } from "../../main";
 
 interface FormValues {
   Contraseña: string;
@@ -33,6 +33,8 @@ export default function CambiarContra() {
   const [hide2, setHide2] = useState(true);
 
   const password = watch("NuevaContraseña");
+
+  titleService.setTitle("Configuracion del usuario - Cambiar Contraseña");
 
   const onSubmit = async (data: FormValues) => {
     try {

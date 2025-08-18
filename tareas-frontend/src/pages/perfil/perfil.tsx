@@ -12,7 +12,12 @@ import { useForm } from "react-hook-form";
 import type { Generos } from "../../models/generos.model";
 import type { Paises } from "../../models/paises.model";
 import { errorHandler } from "../../services/errorhandler.service";
-import { generosService, paisesService, usuarioService } from "../../main";
+import {
+  generosService,
+  paisesService,
+  titleService,
+  usuarioService,
+} from "../../main";
 import { FormAutocomplete } from "../../components/autocomplete/autocomplete-select";
 import { useImagePreview } from "../../hooks/useImagePreview";
 import Swal from "sweetalert2";
@@ -26,6 +31,8 @@ export default function Perfil() {
     formState: { errors },
   } = useForm<Usuarios>();
 
+  titleService.setTitle("Configuracion del usuario - Perfil");
+
   const [paises, setPaises] = useState<Paises[]>([]);
   const [generos, setGeneros] = useState<Generos[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,7 +41,7 @@ export default function Perfil() {
   const { usuario } = useUser();
 
   useEffect(() => {
-    if (!usuario) return; // ⚠️ salir si usuario no existe
+    if (!usuario) return;
     imgURL.set(usuario.foto);
 
     setLoading(true);
@@ -153,7 +160,7 @@ export default function Perfil() {
                     {...register("telefono", {
                       required: "Ingrese la fecha de nacimiento",
                       pattern: {
-                        value: /^[0-9]{10}$/, 
+                        value: /^[0-9]{10}$/,
                         message: "El teléfono debe tener 10 números",
                       },
                     })}

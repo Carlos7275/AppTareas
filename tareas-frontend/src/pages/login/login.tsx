@@ -1,27 +1,39 @@
+"use client";
+
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff, Email } from "@mui/icons-material";
 import "animate.css";
 import "./login.css";
 import Swal from "sweetalert2";
 import { Link } from "react-router";
-import { authService } from "../../main";
+import { authService, titleService } from "../../main";
+
+interface FormData {
+  correo: string;
+  password: string;
+  sesionactiva?: boolean;
+}
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  titleService.setTitle("Iniciar Sesión");
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormData>();
 
-  const onSubmit = async (data: any) => {
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     setLoading(true);
     try {
       const respuesta = await authService.iniciarSesion(data);
-
       localStorage.setItem("jwt", respuesta.data.jwt);
       window.location.reload();
     } catch (error: any) {
@@ -53,19 +65,13 @@ export default function Login() {
                 },
               })}
               error={!!errors.correo}
-              helperText={
-                typeof errors.correo?.message === "string"
-                  ? errors.correo.message
-                  : undefined
-              }
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Email />
-                    </InputAdornment>
-                  ),
-                },
+              helperText={errors.correo?.message}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Email />
+                  </InputAdornment>
+                ),
               }}
             />
 
@@ -83,33 +89,20 @@ export default function Login() {
                 },
               })}
               error={!!errors.password}
-              helperText={
-                typeof errors.password?.message === "string"
-                  ? errors.password.message
-                  : undefined
-              }
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
+              helperText={errors.password?.message}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={togglePasswordVisibility} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
               }}
             />
 
             <div className="checkbox-container">
-              <input
-                type="checkbox"
-                id="sesionactiva"
-                {...register("sesionactiva")}
-              />
+              <input type="checkbox" id="sesionactiva" {...register("sesionactiva")} />
               <label htmlFor="sesionactiva">Mantener sesión activa</label>
             </div>
 

@@ -4,7 +4,7 @@ import type { Tareas } from "../models/tareas.model";
 import GenericService from "./generic.service";
 
 export class TareasService extends GenericService {
-    url = "v1/tareas/"
+    private readonly url = "v1/tareas/"
 
     async crearTarea(data: any) {
         return (await this.api.post<Peticion<Tareas>>(`${this.url}crear`, JSON.stringify(data))).data;

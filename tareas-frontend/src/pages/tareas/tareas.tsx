@@ -28,13 +28,13 @@ import {
   Refresh,
   Search,
 } from "@mui/icons-material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router";
 import Swal from "sweetalert2";
-import { reportesService, tareasService } from "../../main";
+import { reportesService, tareasService, titleService } from "../../main";
 import ModalTareas from "../../modals/modal-tareas/modal-tareas";
-import { type Tareas } from "../../models/tareas.model";
 import { useDebounce } from "../../utils/search.util";
+import type { Tareas } from "../../models/tareas.model";
 
 export default function Tareas() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -63,29 +63,41 @@ export default function Tareas() {
   );
   const [tareas, setTareas] = useState<Tareas[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [openModal, setOpenModal] = useState<{ open: boolean; data: any }>({
+  const [openModal, setOpenModal] = useState<{
+    open: boolean;
+    data: Tareas | null;
+  }>({
     open: false,
     data: null,
   });
 
-  const handleOpenModal = (data: any = null) =>
+  const debouncedBusqueda = useDebounce(busqueda, 500);
+
+  const handleOpenModal = useCallback((data: Tareas | null = null) => {
     setOpenModal({ open: true, data });
-  const handleCloseModal = () => setOpenModal({ open: false, data: null });
+  }, []);
 
-  const actualizarURL = (search: string) => {
-    const params: any = {
-      page: page.toString(),
-      elementos: elementos.toString(),
-      estado,
-      prioridad,
-    };
-    if (fechaInicio) params.fechaInicio = fechaInicio;
-    if (fechaFin) params.fechaFin = fechaFin;
-    if (search) params.busqueda = search;
-    setSearchParams(params);
-  };
+  const handleCloseModal = useCallback(() => {
+    setOpenModal({ open: false, data: null });
+  }, []);
 
-  const obtenerTareas = async () => {
+  const actualizarURL = useCallback(
+    (search: string) => {
+      const params: Record<string, string> = {
+        page: page.toString(),
+        elementos: elementos.toString(),
+        estado,
+        prioridad,
+      };
+      if (fechaInicio) params.fechaInicio = fechaInicio;
+      if (fechaFin) params.fechaFin = fechaFin;
+      if (search) params.busqueda = search;
+      setSearchParams(params);
+    },
+    [page, elementos, estado, prioridad, fechaInicio, fechaFin, setSearchParams]
+  );
+
+  const obtenerTareas = useCallback(async () => {
     setLoading(true);
     try {
       const res = await tareasService.miListado(
@@ -108,62 +120,64 @@ export default function Tareas() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const debouncedBusqueda = useDebounce(busqueda, 500);
-
-  useEffect(() => {
-    actualizarURL(debouncedBusqueda);
   }, [
+    debouncedBusqueda,
     page,
     elementos,
-    estado,
     prioridad,
+    estado,
     fechaInicio,
     fechaFin,
-    debouncedBusqueda,
   ]);
 
-  useEffect(() => {
-    obtenerTareas();
-  }, [
-    page,
-    elementos,
-    estado,
-    prioridad,
-    fechaInicio,
-    fechaFin,
-    debouncedBusqueda,
-  ]);
+  const eliminarTarea = useCallback(
+    async (id: number) => {
+      try {
+        const result = await Swal.fire({
+          title: "¿Estás seguro?",
+          text: "Esta acción eliminará la tarea permanentemente.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+          reverseButtons: true,
+        });
 
-  const eliminarTarea = async (id: number) => {
-    try {
-      const result = await Swal.fire({
-        title: "¿Estás seguro?",
-        text: "Esta acción eliminará la tarea permanentemente.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-        reverseButtons: true,
-      });
-
-      if (result.isConfirmed) {
-        const respuesta = await tareasService.eliminarTarea(id);
-        Swal.fire("Eliminada", respuesta.message, "success").then(() =>
-          obtenerTareas()
+        if (result.isConfirmed) {
+          const respuesta = await tareasService.eliminarTarea(id);
+          Swal.fire("Eliminada", respuesta.message, "success").then(() =>
+            obtenerTareas()
+          );
+        }
+      } catch (error: any) {
+        Swal.fire(
+          "¡Hubo un error!",
+          error?.response?.data?.message || "Error desconocido",
+          "error"
         );
       }
-    } catch (error: any) {
-      Swal.fire(
-        "¡Hubo un error!",
-        error?.response?.data?.message || "Error desconocido",
-        "error"
-      );
-    }
-  };
+    },
+    [obtenerTareas]
+  );
 
-  const solicitudReporte = async () => {
+  const cambiarEstatusTarea = useCallback(
+    async (id: number) => {
+      try {
+        const resultado = await tareasService.cambiarEstado(id);
+        Swal.fire(resultado.message, resultado.data.toString(), "success");
+        obtenerTareas();
+      } catch (error: any) {
+        Swal.fire(
+          "¡Hubo un error!",
+          error?.response?.data?.message || "Error desconocido",
+          "error"
+        );
+      }
+    },
+    [obtenerTareas]
+  );
+
+  const solicitudReporte = useCallback(async () => {
     try {
       const data = {
         id_tipo_reporte: 1,
@@ -176,7 +190,14 @@ export default function Tareas() {
         },
       };
       const response = await reportesService.solicitarReporte(data);
-      Swal.fire(response.message, response.data.toString(), "success");
+      Swal.fire({
+        title: response.message,
+        text: response.data.toString(),
+        icon: "success",
+        timer: 3000,
+        showConfirmButton: true,
+        timerProgressBar: true,
+      });
     } catch (error: any) {
       Swal.fire(
         "¡Hubo un error!",
@@ -184,283 +205,294 @@ export default function Tareas() {
         "error"
       );
     }
-  };
+  }, [busqueda, fechaInicio, fechaFin, prioridad, estado]);
 
-  const cambiarEstatusTarea = async (id: number) => {
-    try {
-      const resultado = await tareasService.cambiarEstado(id);
-      Swal.fire(resultado.message, resultado.data.toString(), "success");
-      obtenerTareas();
-    } catch (error: any) {
-      Swal.fire(
-        "¡Hubo un error!",
-        error?.response?.data?.message || "Error desconocido",
-        "error"
-      );
-    }
-  };
-
-  const handleBusqueda = (event: any) => {
+  const handleBusqueda = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusqueda(event.target.value);
     setPage(1);
   };
 
+  useEffect(() => {
+    actualizarURL(debouncedBusqueda);
+  }, [
+    debouncedBusqueda,
+    page,
+    elementos,
+    estado,
+    prioridad,
+    fechaInicio,
+    fechaFin,
+    actualizarURL,
+  ]);
+
+  useEffect(() => {
+    obtenerTareas();
+  }, [obtenerTareas]);
+
+  titleService.setTitle("Apartado de Tareas");
+
   return (
     <>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={2}
-        alignItems="center"
-        sx={{ p: 2, boxShadow: 1, borderRadius: 2, width: "100%" }}
-      >
-        <TextField
-          label="Buscar Tarea"
-          type="search"
-          value={busqueda}
-          onChange={handleBusqueda}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-        <TextField
-          className="text-body"
-          label="Fecha Inicio"
-          type="date"
-          value={fechaInicio}
-          onChange={(e) => {
-            setFechaInicio(e.target.value);
-            setPage(1);
-          }}
-          slotProps={{ inputLabel: { shrink: true } }}
-        />
-        <TextField
-          className="text-body"
-          label="Fecha Fin"
-          type="date"
-          value={fechaFin}
-          onChange={(e) => {
-            setFechaFin(e.target.value);
-            setPage(1);
-          }}
-          slotProps={{ inputLabel: { shrink: true } }}
-        />
-        <FormControl sx={{ minWidth: 100 }}>
-          <InputLabel>Elementos</InputLabel>
-          <Select
-            className="text-body"
-            value={elementos}
-            onChange={(e) => {
-              setElementos(Number(e.target.value));
-              setPage(1);
-            }}
-          >
-            {[1, 5, 10, 20, 50, 100].map((el) => (
-              <MenuItem key={el} value={el}>
-                {el}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ minWidth: 100 }}>
-          <InputLabel>Prioridad</InputLabel>
-          <Select
-            className="text-body"
-            value={prioridad}
-            onChange={(e) => {
-              setPrioridad(e.target.value);
-              setPage(1);
-            }}
-          >
-            <MenuItem value="T">Todos</MenuItem>
-            <MenuItem value="L">Leve</MenuItem>
-            <MenuItem value="N">Normal</MenuItem>
-            <MenuItem value="A">Alta</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ minWidth: 100 }}>
-          <InputLabel>Estado</InputLabel>
-          <Select
-            className="text-body"
-            value={estado}
-            onChange={(e) => {
-              setEstado(e.target.value);
-              setPage(1);
-            }}
-          >
-            <MenuItem value="T">Todos</MenuItem>
-            <MenuItem value="C">Completado</MenuItem>
-            <MenuItem value="N">No Completado</MenuItem>
-          </Select>
-        </FormControl>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => handleOpenModal()}
+      <div className="animate__animated animate__fadeIn">
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={2}
+          alignItems="center"
+          sx={{ p: 2, boxShadow: 1, borderRadius: 2, width: "100%" }}
         >
-          Agregar
-        </Button>
-        <Button
-          onClick={solicitudReporte}
-          variant="outlined"
-          color="success"
-          startIcon={<AttachFile />}
-        >
-          Reporte
-        </Button>
-      </Stack>
+          <TextField
+            label="Buscar Tarea"
+            type="search"
+            value={busqueda}
+            onChange={handleBusqueda}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          <TextField
+            className="text-body"
+            label="Fecha Inicio"
+            type="date"
+            value={fechaInicio}
+            onChange={(e) => {
+              setFechaInicio(e.target.value);
+              setPage(1);
+            }}
+            slotProps={{ inputLabel: { shrink: true } }}
+          />
+          <TextField
+            className="text-body"
+            label="Fecha Fin"
+            type="date"
+            value={fechaFin}
+            onChange={(e) => {
+              setFechaFin(e.target.value);
+              setPage(1);
+            }}
+            slotProps={{ inputLabel: { shrink: true } }}
+          />
+          <FormControl sx={{ minWidth: 100 }}>
+            <InputLabel>Elementos</InputLabel>
+            <Select
+              className="text-body"
+              value={elementos}
+              onChange={(e) => {
+                setElementos(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              {[1, 5, 10, 20, 50, 100].map((el) => (
+                <MenuItem key={el} value={el}>
+                  {el}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 100 }}>
+            <InputLabel>Prioridad</InputLabel>
+            <Select
+              className="text-body"
+              value={prioridad}
+              onChange={(e) => {
+                setPrioridad(e.target.value);
+                setPage(1);
+              }}
+            >
+              <MenuItem value="T">Todos</MenuItem>
+              <MenuItem value="L">Leve</MenuItem>
+              <MenuItem value="N">Normal</MenuItem>
+              <MenuItem value="A">Alta</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 100 }}>
+            <InputLabel>Estado</InputLabel>
+            <Select
+              className="text-body"
+              value={estado}
+              onChange={(e) => {
+                setEstado(e.target.value);
+                setPage(1);
+              }}
+            >
+              <MenuItem value="T">Todos</MenuItem>
+              <MenuItem value="C">Completado</MenuItem>
+              <MenuItem value="N">No Completado</MenuItem>
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => handleOpenModal(null)}
+          >
+            Agregar
+          </Button>
+          <Button
+            onClick={solicitudReporte}
+            variant="outlined"
+            color="success"
+            startIcon={<AttachFile />}
+          >
+            Solicitar Reporte
+          </Button>
+        </Stack>
 
-      {loading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "200px",
-          }}
-        >
-          <CircularProgress />
-        </div>
-      ) : (
-        <TableContainer component={Paper} className="bg-body" sx={{ mt: 2 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {[
-                  "",
-                  "Tarea",
-                  "Fecha de creacion",
-                  "Fecha Inicio",
-                  "Fecha Fin",
-                  "Fecha de terminacion",
-                  "Prioridad",
-                  "Estado",
-                  "Acciones",
-                ].map((title) => (
-                  <TableCell className="text-body" key={title}>
-                    {title}
-                  </TableCell>
-                ))}
-                <TableCell>
-                  <Button onClick={obtenerTareas} startIcon={<Refresh />} />
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tareas.length === 0 ? (
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+            }}
+          >
+            <CircularProgress />
+          </div>
+        ) : (
+          <TableContainer component={Paper} className="bg-body" sx={{ mt: 2 }}>
+            <Table>
+              <TableHead>
                 <TableRow>
-                  <TableCell className="text-body" colSpan={9} align="center">
-                    No hay datos
+                  {[
+                    "",
+                    "Tarea",
+                    "Fecha de creacion",
+                    "Fecha Inicio",
+                    "Fecha Fin",
+                    "Fecha de terminacion",
+                    "Prioridad",
+                    "Estado",
+                    "Acciones",
+                  ].map((title) => (
+                    <TableCell key={title} className="text-body">
+                      {title}
+                    </TableCell>
+                  ))}
+                  <TableCell>
+                    <Button onClick={obtenerTareas} startIcon={<Refresh />} />
                   </TableCell>
                 </TableRow>
-              ) : (
-                tareas.map((t) => (
-                  <TableRow key={t.id} hover>
-                    <TableCell>
-                      <Tooltip title="Cambiar Estatus Tarea">
-                        <Checkbox
-                          checked={t.completado}
-                          onChange={() => cambiarEstatusTarea(t.id)}
-                          color="success"
-                        />
-                      </Tooltip>
-                    </TableCell>
-                    <TableCell className="text-body">{t.nombre}</TableCell>
-                    <TableCell>
-                      {new Date(t.created).toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-body">
-                      {t.fecha_inicio
-                        ? new Date(t.fecha_inicio).toLocaleString()
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="text-body">
-                      {t.fecha_fin
-                        ? new Date(t.fecha_fin).toLocaleString()
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="text-body">
-                      {t.fecha_terminado
-                        ? new Date(t.fecha_terminado).toLocaleString()
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="text-body">
-                      <Chip
-                        label={t.prioridad}
-                        color={
-                          t.prioridad === "ALTA"
-                            ? "error"
-                            : t.prioridad === "NORMAL"
-                            ? "warning"
-                            : "success"
-                        }
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell className="text-body">
-                      <Chip
-                        label={t.estadoCompletado || "No completada"}
-                        color={
-                          t.estadoCompletado === "Completada con retraso"
-                            ? "error"
-                            : t.estadoCompletado === "Completada a tiempo"
-                            ? "success"
-                            : "default"
-                        }
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell className="text-body">
-                      <Stack direction="row" spacing={1}>
-                        <Tooltip title="Editar">
-                          <Button
-                            variant="contained"
-                            color="warning"
-                            onClick={() => handleOpenModal(t)}
-                          >
-                            <Edit />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip title="Eliminar">
-                          <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() => eliminarTarea(t.id)}
-                          >
-                            <Delete />
-                          </Button>
-                        </Tooltip>
-                      </Stack>
+              </TableHead>
+              <TableBody>
+                {tareas.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      className="text-body"
+                      colSpan={10}
+                      align="center"
+                    >
+                      No hay datos
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+                ) : (
+                  tareas.map((t) => (
+                    <TableRow key={t.id} hover>
+                      <TableCell>
+                        <Tooltip title="Cambiar Estatus Tarea">
+                          <Checkbox
+                            checked={t.completado}
+                            onChange={() => cambiarEstatusTarea(t.id)}
+                            color="success"
+                          />
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell className="text-body">{t.nombre}</TableCell>
+                      <TableCell>
+                        {new Date(t.created).toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-body">
+                        {t.fecha_inicio
+                          ? new Date(t.fecha_inicio).toLocaleString()
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="text-body">
+                        {t.fecha_fin
+                          ? new Date(t.fecha_fin).toLocaleString()
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="text-body">
+                        {t.fecha_terminado
+                          ? new Date(t.fecha_terminado).toLocaleString()
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="text-body">
+                        <Chip
+                          label={t.prioridad}
+                          color={
+                            t.prioridad === "ALTA"
+                              ? "error"
+                              : t.prioridad === "NORMAL"
+                              ? "warning"
+                              : "success"
+                          }
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell className="text-body">
+                        <Chip
+                          label={t.estadoCompletado || "No completada"}
+                          color={
+                            t.estadoCompletado === "Completada con retraso"
+                              ? "error"
+                              : t.estadoCompletado === "Completada a tiempo"
+                              ? "success"
+                              : "default"
+                          }
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell className="text-body">
+                        <Stack direction="row" spacing={1}>
+                          <Tooltip title="Editar">
+                            <Button
+                              variant="contained"
+                              color="warning"
+                              onClick={() => handleOpenModal(t)}
+                            >
+                              <Edit />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip title="Eliminar">
+                            <Button
+                              variant="contained"
+                              color="error"
+                              onClick={() => eliminarTarea(t.id)}
+                            >
+                              <Delete />
+                            </Button>
+                          </Tooltip>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
-      {elementos > 0 && (
-        <Pagination
-          count={Math.ceil(total / elementos)}
-          page={page}
-          onChange={(val: any) => setPage(val)}
-          color="primary"
-          sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+        {elementos > 0 && (
+          <Pagination
+            count={Math.ceil(total / elementos)}
+            page={page}
+            onChange={(e, val) => setPage(val)}
+            color="primary"
+            sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+          />
+        )}
+
+        <ModalTareas
+          open={openModal.open}
+          onClose={handleCloseModal}
+          onSave={obtenerTareas}
+          data={openModal.data}
         />
-      )}
-
-      <ModalTareas
-        open={openModal.open}
-        onClose={handleCloseModal}
-        onSave={obtenerTareas}
-        data={openModal.data}
-      />
+      </div>
     </>
   );
 }
