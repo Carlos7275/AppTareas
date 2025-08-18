@@ -37,7 +37,7 @@ ormConfig_schema="public"
 NODE_ENV=$NODE_ENV
 FRONT_URL=["http://localhost", "http://host.docker.internal", "*"]
 REDIS_URL="redis://redis:6379"
-RABBITMQ_URL=amqp://user:password@localhost:5672
+RABBITMQ_URL=amqp://user:password@rabbitmq:5672
 RABBITMQ_QUEUE=report_queue
 EOL
 else

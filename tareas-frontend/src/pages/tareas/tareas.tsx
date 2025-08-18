@@ -480,7 +480,7 @@ export default function Tareas() {
           <Pagination
             count={Math.ceil(total / elementos)}
             page={page}
-            onChange={(e, val) => setPage(val)}
+            onChange={(_event, value) => setPage(value)}
             color="primary"
             sx={{ mt: 2, display: "flex", justifyContent: "center" }}
           />
