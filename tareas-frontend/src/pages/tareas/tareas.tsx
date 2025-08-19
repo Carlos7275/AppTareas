@@ -145,7 +145,7 @@ export default function Tareas() {
 
         if (result.isConfirmed) {
           const respuesta = await tareasService.eliminarTarea(id);
-          Swal.fire(respuesta.message, respuesta.data, "success").then(() =>
+          Swal.fire(respuesta.message, respuesta.data.toString(), "success").then(() =>
             obtenerTareas()
           );
         }
