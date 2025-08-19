@@ -145,7 +145,7 @@ export default function Tareas() {
 
         if (result.isConfirmed) {
           const respuesta = await tareasService.eliminarTarea(id);
-          Swal.fire("Eliminada", respuesta.message, "success").then(() =>
+          Swal.fire(respuesta.message, respuesta.data, "success").then(() =>
             obtenerTareas()
           );
         }
@@ -395,7 +395,7 @@ export default function Tareas() {
                       <TableCell>
                         <Tooltip title="Cambiar Estatus Tarea">
                           <Checkbox
-                          className="text-body"
+                            className="text-body"
                             checked={t.completado}
                             onChange={() => cambiarEstatusTarea(t.id)}
                             color="success"
@@ -437,7 +437,7 @@ export default function Tareas() {
                       <TableCell className="text-body">
                         <Chip
                           label={t.estadoCompletado || "No completada"}
-                          sx={{color:"inherit"}}
+                          sx={{ color: "inherit" }}
                           color={
                             t.estadoCompletado === "Completada con retraso"
                               ? "error"
