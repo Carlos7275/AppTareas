@@ -1,0 +1,177 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dark-theme {
+  background-color: #212529 !important;
+  color: #ffffff;
+}
+.light-theme {
+  background-color: #ffffff !important;
+  color: #000000;
+}
+
+.contenedor {
+  width: 100%; /* Hace que el contenedor ocupe todo el ancho disponible */
+  max-width: 1140px; /* Establece un ancho máximo */
+  margin: 0 auto; /* Centra el contenedor */
+  padding: 15px; /* Agrega espacio interno */
+  box-sizing: border-box; /* Incluye el padding y borde en las dimensiones */
+}
+
+@media (max-width: 1199px) {
+  .contenedor {
+    max-width: 960px; /* Ajusta el tamaño máximo en pantallas más pequeñas */
+  }
+}
+
+@media (max-width: 991px) {
+  .contenedor {
+    max-width: 720px; /* Ajusta el tamaño máximo aún más */
+  }
+}
+
+@media (max-width: 767px) {
+  .contenedor {
+    max-width: 100%; /* En pantallas aún más pequeñas, usa todo el ancho */
+  }
+}
+
+.hero-section {
+  position: relative; /* IMPORTANTE para overlay */
+  display: flex;
+  padding: 4rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  background-size: cover;
+  background-position: center;
+  /* El background-image lo puedes aplicar inline en React */
+}
+
+.hero-section .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-section > *:not(.overlay) {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-text {
+  flex: 1;
+  min-width: 280px;
+}
+
+.hero-text h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.hero-text h4 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+
+  color: #ffffff;
+}
+
+.hero-text p {
+  font-size: 2.5vh;
+  line-height: 1.6;
+  color: #d0d0d0;
+}
+
+/* Inputs de MUI en dark theme */
+
+
+
+.dark-theme .MuiOutlinedInput-root input {
+  color: #eee !important;
+}
+
+.dark-theme .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark-theme
+  .MuiOutlinedInput-root.Mui-focused
+  .MuiOutlinedInput-notchedOutline {
+  border-color: #4dabf5 !important;
+}
+
+.dark-theme .MuiInputLabel-root {
+  color: #ccc !important;
+}
+
+.dark-theme .MuiInputLabel-root.Mui-focused {
+  color: #4dabf5 !important;
+}
+
+.dark-theme .MuiInputAdornment-root svg {
+  color: #eee; /* color claro para dark theme */
+}
+
+.dark-theme .MuiIconButton-root {
+  color: #eee; /* iconos de visibility */
+}
+
+.dark-theme .MuiIconButton-root:hover {
+  color: #4dabf5; /* color al pasar el mouse */
+}
+
+
+/* Spinner estilo simple */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.dark-theme .swal2-popup {
+  background-color: #212529;
+  color: white;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.checkbox-container input {
+  width: 18px;
+  height: 18px;
+}
+
+
+.swal2-container {
+  z-index: 10000!important;
+}
