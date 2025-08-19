@@ -146,6 +146,8 @@ export class TareasController {
      * Obtener estadísticas generales de las tareas del usuario
      */
     @Get("estadisticas")
+    @HttpCode(200)
+
     @ApiBearerAuth()
     @Throttle({ default: { limit: 50, ttl: 60000 } })
     @ApiOperation({ summary: 'Estadísticas de tareas', description: 'Obtiene estadísticas agregadas de las tareas del usuario.' })

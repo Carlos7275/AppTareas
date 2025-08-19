@@ -23,6 +23,11 @@ import { ReportesService } from 'src/services/reporte.service';
 import { Reporte } from 'src/entities/reporte.entity';
 import { Tareas } from 'src/entities/tareas.entity';
 import { TareasService } from 'src/services/tareas.service';
+import { TokensFCMService } from 'src/services/token_fcm.service';
+import { TokensFCM } from 'src/entities/tokens_fcm.entity';
+import { ScheduleModule } from '@nestjs/schedule';
+import { FirebaseService } from 'src/services/firebase.service';
+import { RecordatorioTareasCronService } from 'src/services/recordatorios-tareas.service';
 
 @Module({
     imports: [
@@ -56,8 +61,7 @@ import { TareasService } from 'src/services/tareas.service';
                 useFactory: (configService: ConfigService) => rabbitMQConfig(configService),
             },
         ]),
-
-
+        ScheduleModule.forRoot(),
         RedisModule.forRoot({
             type: 'single',
             url: process.env.REDIS_URL,
@@ -73,7 +77,8 @@ import { TareasService } from 'src/services/tareas.service';
         }),
 
 
-        TypeOrmModule.forFeature([Usuarios, UsuariosDetalle, Reporte, Tareas
+        TypeOrmModule.forFeature([Usuarios, UsuariosDetalle, Reporte, Tareas,
+            TokensFCM
         ]),
 
 
@@ -90,16 +95,23 @@ import { TareasService } from 'src/services/tareas.service';
         ReportesWorker,
         RabbitMQService,
         ReportesService,
+        TokensFCMService,
         TareasService,
+        RecordatorioTareasCronService,
+        FirebaseService
+
     ],
     exports: [
         ListaNegraService,
         UsuariosService,
         RedisService,
         JwtService,
+        TokensFCMService,
         AuthService,
         ReportesWorker,
-        TareasService
+        TareasService,
+        RecordatorioTareasCronService,
+        FirebaseService
 
     ],
 })

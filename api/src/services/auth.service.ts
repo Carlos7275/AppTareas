@@ -6,6 +6,7 @@ import { PayloadModel } from 'src/models/Payload/payload.model';
 import { UsuariosService } from './usuarios.service';
 import { ListaNegraService } from './lista-negra.service';
 import { configDotenv } from 'dotenv';
+import { TokensFCMService } from './token_fcm.service';
 configDotenv();
 @Injectable()
 export class AuthService {
@@ -14,11 +15,13 @@ export class AuthService {
         private usuarioService: UsuariosService,
         private jwtService: JwtService,
         private listaNegraService: ListaNegraService,
+        private tokenFCM: TokensFCMService
     ) { }
 
     async authenticateUser(
         email: string,
         pass: string,
+
     ): Promise<Partial<any> | false> {
         const user: Usuarios = await this.usuarioService.findOne({
             where: { correo: email, estatus: true },
@@ -52,6 +55,7 @@ export class AuthService {
     async login(
         user: Partial<any>,
         sesionactiva: boolean,
+        tokenFCM?: string,
         timeout = null,
     ): Promise<string> {
         const payload: PayloadModel = {
@@ -63,6 +67,8 @@ export class AuthService {
         };
 
         await this.usuarioService.actualizarFechaLogin(user.id);
+        if (tokenFCM)
+            await this.tokenFCM.create({ id_usuario: user.id, token: tokenFCM });
 
         let expiresIn = sesionactiva ? '365d' : process.env.expireTime || '1h';
         expiresIn = timeout ? timeout : expiresIn;

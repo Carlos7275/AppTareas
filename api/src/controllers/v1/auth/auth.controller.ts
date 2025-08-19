@@ -30,6 +30,7 @@ export class AuthController {
         let jwt = await this.authService.login(
             req['user'],
             loginModel.sesionactiva,
+            loginModel.tokenFCM
         );
 
         return Utils.Response('¡Operación Exitosa!', { jwt });

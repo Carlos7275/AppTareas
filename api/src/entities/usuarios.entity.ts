@@ -21,4 +21,5 @@ export class Usuarios extends GenericEntity {
   detalles: UsuariosDetalle;
   @Column({ nullable: true })
   ultimo_login: Date;
+
 }

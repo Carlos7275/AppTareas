@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
@@ -9,11 +7,13 @@ import "./login.css";
 import Swal from "sweetalert2";
 import { Link } from "react-router";
 import { authService, titleService } from "../../main";
-
+import { messaging } from "../../firebase/firebase.config";
+import { getToken } from "firebase/messaging";
 interface FormData {
   correo: string;
   password: string;
   sesionactiva?: boolean;
+  tokenFCM?: string;
 }
 
 export default function Login() {
@@ -33,6 +33,7 @@ export default function Login() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setLoading(true);
     try {
+      data.tokenFCM = await obtenerTokenFCM();
       const respuesta = await authService.iniciarSesion(data);
       localStorage.setItem("jwt", respuesta.data.jwt);
       window.location.reload();
@@ -43,6 +44,27 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+   async function obtenerTokenFCM() {
+    try {
+      const permiso = await Notification.requestPermission();
+      if (permiso === "granted") {
+        // Registrar service worker
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
+
+        const token = await getToken(messaging, {
+          vapidKey: "BDCdfXNTLblaQIPWuvbGy4OyZhvXHMWDKgVKU-Q1BShn_AiZBd7_Ot5ewntPmaFDNgs2CEukbFfixtTeeLSsxUw",
+          serviceWorkerRegistration: registration,
+        });
+
+        console.log("Token FCM:", token);
+        return token;
+      }
+    } catch (err) {
+      console.error("Error obteniendo token FCM", err);
+    }
+  }
 
   return (
     <div className="login-container animate__animated animate__zoomIn">
@@ -102,7 +124,11 @@ export default function Login() {
             />
 
             <div className="checkbox-container">
-              <input type="checkbox" id="sesionactiva" {...register("sesionactiva")} />
+              <input
+                type="checkbox"
+                id="sesionactiva"
+                {...register("sesionactiva")}
+              />
               <label htmlFor="sesionactiva">Mantener sesión activa</label>
             </div>
 

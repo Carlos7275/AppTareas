@@ -15,6 +15,7 @@ import {
   InputAdornment,
   Pagination,
   Button,
+  Chip,
 } from "@mui/material";
 import { Download, Refresh, Search } from "@mui/icons-material";
 import type { Reportes } from "../../models/reportes.model";
@@ -157,7 +158,24 @@ export default function Descargas() {
                     <TableCell className="text-body">
                       {new Date(r.created).toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-body">{r.estado}</TableCell>
+                    <TableCell className="text-body">
+                      <Chip
+                        label={r.estado}
+                        color={
+                          r.estado === "COMPLETADO"
+                            ? "success"
+                            : r.estado === "PROCESANDO" ||
+                              r.estado === "REINTENTANDO"
+                            ? "info"
+                            : r.estado === "PENDIENTE"
+                            ? "warning"
+                            : r.estado === "ERROR"
+                            ? "error"
+                            : "default"
+                        }
+                        size="small"
+                      />
+                    </TableCell>{" "}
                     <TableCell className="text-body">
                       {r.error || "-"}
                     </TableCell>

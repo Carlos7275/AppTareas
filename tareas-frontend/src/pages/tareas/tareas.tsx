@@ -395,6 +395,7 @@ export default function Tareas() {
                       <TableCell>
                         <Tooltip title="Cambiar Estatus Tarea">
                           <Checkbox
+                          className="text-body"
                             checked={t.completado}
                             onChange={() => cambiarEstatusTarea(t.id)}
                             color="success"
@@ -402,7 +403,7 @@ export default function Tareas() {
                         </Tooltip>
                       </TableCell>
                       <TableCell className="text-body">{t.nombre}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-body">
                         {new Date(t.created).toLocaleString()}
                       </TableCell>
                       <TableCell className="text-body">
@@ -436,6 +437,7 @@ export default function Tareas() {
                       <TableCell className="text-body">
                         <Chip
                           label={t.estadoCompletado || "No completada"}
+                          sx={{color:"inherit"}}
                           color={
                             t.estadoCompletado === "Completada con retraso"
                               ? "error"
