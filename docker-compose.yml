@@ -6,10 +6,10 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: tareas
-      MYSQL_USER: docker
-      MYSQL_PASSWORD: rootpassword
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     ports:
       - "3306:3306"
     volumes:
@@ -43,7 +43,7 @@ services:
       - redis
       - rabbitmq
     environment:
-      NODE_ENV: production  
+      NODE_ENV: development
 
   app-react:
     build: ./tareas-frontend

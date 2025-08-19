@@ -16,9 +16,10 @@ for host in "mysql:3306" "redis:6379" "rabbitmq:5672"; do
   echo "$service listo!"
 done
 
-echo "Creando el .env"
 # Crear .env si no existe
 if [ ! -f "$ENV_FILE" ]; then
+echo "Creando el .env"
+
   cat <<EOL > $ENV_FILE
 PORT=3000
 jwtSecret="*53kr374jw7~!!"
@@ -27,8 +28,8 @@ ignoreExpiration="false"
 ormConfig_type=mysql
 ormConfig_host=mysql
 ormConfig_port="3306"
-ormConfig_username="docker"
-ormConfig_password="rootpassword"
+ormConfig_username="user"
+ormConfig_password="password"
 ormConfig_database="tareas"
 ormConfig_logging="false"
 ormConfig_synchronize=true
@@ -44,12 +45,5 @@ else
   sed -i 's/ormConfig_synchronize=true/ormConfig_synchronize=false/' $ENV_FILE
 fi
 
-# Ejecutar la app según NODE_ENV
-if [ "$NODE_ENV" = "production" ]; then
-  echo "Iniciando app en PRODUCCIÓN..."
-  npm run build
-  exec node dist/src/main.js
-else
-  echo "Iniciando app en DESARROLLO..."
-  exec npm run start:dev
-fi
+ npm run build
+exec node dist/src/main.js
