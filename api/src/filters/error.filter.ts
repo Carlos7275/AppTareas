@@ -8,10 +8,32 @@ export class ErrorFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response: Response = ctx.getResponse();
 
-    let message = 'Internal Server Error';
+    let message = 'Error interno del servidor';
     let statusCode = error.status || 500;
 
-    if (error instanceof AggregateError) {
+
+    if (error?.code) {
+      switch (error.code) {
+        case 'ER_DUP_ENTRY':
+          message = 'Ya existe un registro con ese valor.';
+          statusCode = 400;
+          break;
+        case 'ER_NO_REFERENCED_ROW_2':
+          message = 'No se puede realizar la operación porque el registro relacionado no existe.';
+          statusCode = 400;
+          break;
+        case 'ER_ROW_IS_REFERENCED_2':
+          message = 'No se puede eliminar o modificar el registro porque está siendo referenciado.';
+          statusCode = 400;
+          break;
+
+        default:
+          message = error.message || message;
+          break;
+      }
+    }
+
+    else if (error instanceof AggregateError) {
       const errors = error.errors.map((e: any) => e.message || e.toString());
       message = errors.join('\n');
     } else if (error instanceof Error) {

@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import "./user-dropdown.css";
 import type { Usuarios } from "../../models/usuarios.model";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
 import { authService } from "../../main";
 import { useUser } from "../../providers/user.provider";
