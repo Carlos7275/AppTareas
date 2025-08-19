@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
 import { authService } from "../../main";
 import { useUser } from "../../providers/user.provider";
+import { errorHandler } from "../../services/errorhandler.service";
 
 function UserAvatar({ foto, toggle }: { foto: string; toggle: () => void }) {
   return (
@@ -31,11 +32,7 @@ export default function UserDropdown() {
         const datos = (await authService.me()).data as Usuarios;
         setUsuario(datos);
       } catch (error: any) {
-        Swal.fire(
-          "¡Hubo un problema!",
-          error?.response?.data?.message || "Error desconocido",
-          "error"
-        );
+        errorHandler(error);
       }
     })();
   }, []);
