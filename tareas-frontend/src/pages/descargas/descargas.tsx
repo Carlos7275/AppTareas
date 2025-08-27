@@ -16,6 +16,8 @@ import {
   Pagination,
   Button,
   Chip,
+  Typography,
+  Stack,
 } from "@mui/material";
 import { Download, Refresh, Search } from "@mui/icons-material";
 import type { Reportes } from "../../models/reportes.model";
@@ -207,15 +209,39 @@ export default function Descargas() {
           </Table>
         </Paper>
 
-        {limite > 0 && (
-          <Pagination
-            className="text-body"
-            count={Math.ceil(total / limite)}
-            page={pagina}
-            onChange={(_, val) => setPagina(val)}
-            color="primary"
-            sx={{ mt: 2, display: "flex", justifyContent: "center" }}
-          />
+        {limite > 0 && total > 0 && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{
+              mt: 2,
+              mb: 5,
+              px: 2,
+              py: 1,
+              borderRadius: 2,
+              backgroundColor: "var(--bg-body)"
+            }}
+          >
+            <Pagination
+              count={Math.ceil(total / limite)}
+              page={pagina}
+              onChange={(_, val) => setPagina(val)}
+              sx={{
+                "& .MuiPaginationItem-root": {
+                  color: "inherit",
+                },
+              }}
+            />
+
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 500}}
+            >
+              Se encontr{total > 1 ? "aron" : "o"} {total} elemento
+              {total > 1 ? "s" : ""}
+            </Typography>
+          </Stack>
         )}
       </Box>
     </div>
