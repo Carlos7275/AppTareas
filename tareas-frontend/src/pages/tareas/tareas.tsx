@@ -19,6 +19,7 @@ import {
   Chip,
   CircularProgress,
   Checkbox,
+  Typography,
 } from "@mui/material";
 import {
   Add,
@@ -145,9 +146,11 @@ export default function Tareas() {
 
         if (result.isConfirmed) {
           const respuesta = await tareasService.eliminarTarea(id);
-          Swal.fire(respuesta.message, respuesta.data.toString(), "success").then(() =>
-            obtenerTareas()
-          );
+          Swal.fire(
+            respuesta.message,
+            respuesta.data.toString(),
+            "success"
+          ).then(() => obtenerTareas());
         }
       } catch (error: any) {
         Swal.fire(
@@ -478,14 +481,30 @@ export default function Tareas() {
           </TableContainer>
         )}
 
-        {elementos > 0 && (
-          <Pagination
-            count={Math.ceil(total / elementos)}
-            page={page}
-            onChange={(_event, value) => setPage(value)}
-            color="primary"
-            sx={{ mt: 2, display: "flex", justifyContent: "center" }}
-          />
+        {total > 0 && elementos > 0 && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            className="bg-body rounded text-body"
+            justifyContent="space-between"
+            style={{ marginBottom: "50px", marginTop: "10px" }}
+          >
+            <Pagination
+              count={Math.ceil(total / elementos)}
+              page={page}
+              onChange={(_event, value) => setPage(value)}
+              sx={{
+                "& .MuiPaginationItem-root": {
+                  color: "inherit",
+                },
+              }}
+            />
+
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              Se encontr{total > 1 ? "aron" : "o"} {total} elemento
+              {total > 1 ? "s" : ""}
+            </Typography>
+          </Stack>
         )}
 
         <ModalTareas
