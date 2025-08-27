@@ -44,13 +44,12 @@ function App() {
   const verificarToken = () => {
     const token = localStorage.getItem("jwt");
     if (token && isTokenExpired(token)) {
-      localStorage.removeItem("jwt");
-
       Swal.fire(
         "¡Atención!",
         "¡Su sesión expiró, vuelva a iniciar sesión para continuar navegando!",
         "info"
       ).then(() => {
+        localStorage.removeItem("jwt");
         window.location.reload();
       });
     }
