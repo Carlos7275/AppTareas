@@ -1,14 +1,14 @@
-export const formatDateTimeLocal = (date?: string) => {
+export const formatDateTimeLocal = (date?: string | Date) => {
   if (!date) return "";
-  const d = new Date(date);
+  const d = typeof date === "string" ? new Date(date.replace(" ", "T")) : date;
 
   const pad = (n: number) => n.toString().padStart(2, "0");
 
-  const year = d.getUTCFullYear();
-  const month = pad(d.getUTCMonth() + 1);
-  const day = pad(d.getUTCDate());
-  const hours = pad(d.getUTCHours());
-  const minutes = pad(d.getUTCMinutes());
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };

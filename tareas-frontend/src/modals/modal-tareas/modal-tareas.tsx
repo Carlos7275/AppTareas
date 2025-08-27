@@ -45,9 +45,10 @@ export default function ModalTareas({
       prioridad: data?.prioridad || "",
       completada: data?.completado || false,
       rangoFechas: false,
-      fechaInicio: data?.fecha_inicio || "",
-      fechaFin: data?.fecha_fin || "",
-      fechaTerminacion: data?.fecha_terminado || "",
+      fechaInicio: new Date(data?.fecha_inicio).toLocaleString() || "",
+      fechaFin: formatDateTimeLocal(data?.fecha_fin) || "",
+      fechaTerminacion:
+        formatDateTimeLocal(data?.fecha_terminado).toLocaleString() || "",
     },
   });
 
@@ -83,9 +84,15 @@ export default function ModalTareas({
       descripcion: formData.descripcion,
       prioridad: formData.prioridad,
       completado: formData.completada,
-      fecha_inicio: formData.fechaInicio || null,
-      fecha_fin: formData.fechaFin || null,
-      fecha_terminado: formData.fechaTerminacion || null,
+      fecha_inicio: formData.fechaInicio
+        ? new Date(formData.fechaInicio).toISOString()
+        : null,
+      fecha_fin: formData.fechaFin
+        ? new Date(formData.fechaFin).toISOString()
+        : null,
+      fecha_terminado: formData.fechaTerminacion
+        ? new Date(formData.fechaTerminacion).toISOString()
+        : null,
     };
 
     data ? modificarTarea(dto) : agregarTarea(dto);
