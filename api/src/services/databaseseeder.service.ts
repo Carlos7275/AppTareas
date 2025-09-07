@@ -33,6 +33,7 @@ export class DatabaseSeederService {
     const synchronize = process.env.ormConfig_synchronize === 'true';
     if (synchronize) {
       await this.deleteDB();
+      
       await this.seedPaises();
       await this.seedRoles();
       await this.seedGeneros();
