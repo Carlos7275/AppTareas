@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@nestjs-modules/ioredis": "^2.0.2",
+    "@nestjs/bull": "^11.0.3",
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
@@ -38,6 +39,7 @@
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.8",
     "bcrypt": "^6.0.0",
+    "bull": "^4.16.5",
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
     "class-validator-i18n": "^1.1.0",

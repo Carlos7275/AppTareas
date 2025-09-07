@@ -110,6 +110,10 @@ export class TareasController {
         if (fechaInicio) filtros.push({ field: "created", operator: "gt", value: fechaInicio });
         if (fechaFin) filtros.push({ field: "created", operator: "lt", value: fechaFin });
 
+        const orders: Record<string, 'ASC' | 'DESC'> = {
+            created: 'DESC',
+            id:"ASC"
+        };
         const data = await this._tareasService.paginate(
             pagina,
             limite,
@@ -117,9 +121,9 @@ export class TareasController {
             busqueda,
             [],
             [],
-            filtros
+            filtros,
+            orders
         );
-
         const now = new Date();
         const enhancedData = data.data.map((t: any) => {
             let expirando = false;

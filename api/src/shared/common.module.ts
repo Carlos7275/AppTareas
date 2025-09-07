@@ -28,6 +28,8 @@ import { TokensFCM } from 'src/entities/tokens_fcm.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { FirebaseService } from 'src/services/firebase.service';
 import { RecordatorioTareasCronService } from 'src/services/recordatorios-tareas.service';
+import { ExcelService } from 'src/services/excel.service';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
     imports: [
@@ -61,6 +63,7 @@ import { RecordatorioTareasCronService } from 'src/services/recordatorios-tareas
                 useFactory: (configService: ConfigService) => rabbitMQConfig(configService),
             },
         ]),
+
         ScheduleModule.forRoot(),
         RedisModule.forRoot({
             type: 'single',
@@ -98,7 +101,8 @@ import { RecordatorioTareasCronService } from 'src/services/recordatorios-tareas
         TokensFCMService,
         TareasService,
         RecordatorioTareasCronService,
-        FirebaseService
+        FirebaseService,
+        ExcelService
 
     ],
     exports: [
@@ -111,7 +115,8 @@ import { RecordatorioTareasCronService } from 'src/services/recordatorios-tareas
         ReportesWorker,
         TareasService,
         RecordatorioTareasCronService,
-        FirebaseService
+        FirebaseService,
+        ExcelService
 
     ],
 })

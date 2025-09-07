@@ -9,6 +9,8 @@ export const rabbitMQConfig = (configService: ConfigService): RmqOptions => ({
     queueOptions: {
       durable: true,
     },
-    persistent: true,
+    socketOptions: {
+      heartbeatIntervalInSeconds: 60 * 60
+    }
   },
 });

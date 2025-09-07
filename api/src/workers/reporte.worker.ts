@@ -4,10 +4,8 @@ import { RabbitMQService } from "src/services/rabbitmq.service";
 import { ReportesService } from "src/services/reporte.service";
 import { TareasService } from "src/services/tareas.service";
 import { Filter } from "src/types/filtros.type";
-import * as fs from "fs";
-import * as path from "path";
-import { v4 as uuidv4 } from 'uuid';
 import { EstadoReporte } from "src/entities/reporte.entity";
+import { ExcelService } from "src/services/excel.service";
 
 @Controller()
 export class ReportesWorker {
@@ -17,6 +15,7 @@ export class ReportesWorker {
         private readonly rabbitService: RabbitMQService,
         private readonly reportesService: ReportesService,
         private readonly tareasService: TareasService,
+        private readonly excelService: ExcelService
     ) { }
 
     @MessagePattern('report_queue')
@@ -24,6 +23,8 @@ export class ReportesWorker {
         this.logger.log(`Mensaje recibido en worker: ${JSON.stringify(payload)}`);
 
         const datosReporte = await this.reportesService.findOne({ where: { id: payload.id_reporte }, relations: ["usuario"] });
+        if (!datosReporte) return;
+
         const tipoReporte = datosReporte.id_tipo_reporte;
 
         try {
@@ -31,14 +32,12 @@ export class ReportesWorker {
                 case 1:
                     await this.generarReporteTareas(datosReporte);
                     break;
-
                 default:
                     this.logger.error(`No existe el tipo de reporte: ${tipoReporte}`);
                     break;
             }
         } catch (error) {
             this.logger.error(`Error generando reporte: ${error.message}`);
-
             await this.reportesService.update(datosReporte.id, {
                 estado: 'ERROR',
                 error: error.message
@@ -55,34 +54,37 @@ export class ReportesWorker {
             } else {
                 this.logger.error(`Reporte ${datosReporte.id} alcanzó el máximo de reintentos (${maxRetries})`);
             }
-
         }
 
         return { status: "OK", recibido: payload };
     }
 
+
     private async generarReporteTareas(datosReporte: any) {
         this.logger.log("Generando reporte de tareas...");
 
-        const datos = datosReporte.filtros;
+        const datos = datosReporte.filtros ? { ...datosReporte.filtros } : {};
         const descripcion = `Reporte de tareas del usuario: ${datosReporte.usuario.nombres} ${datosReporte.usuario.apellidos}`;
+
         const filtros: Filter[] = [{ field: "id_usuario", operator: "eq", value: datosReporte.id_usuario }];
 
-
-        if (datos.priorirad && datos.priorirad !== "T") {
-            filtros.push({ field: "prioridad", operator: "eq", value: datos.priorirad });
+        if (datos.prioridad && datos.prioridad !== "T") {
+            const prioridadMap: Record<string, string> = { L: "LEVE", N: "NORMAL", A: "ALTA" };
+            filtros.push({ field: "prioridad", operator: "eq", value: prioridadMap[datos.prioridad] });
         }
-        if (datos.estatus && datos.estatus !== "T") {
-            filtros.push({ field: "completado", operator: "eq", value: datos.estatus === "C" });
+        if (datos.estado && datos.estado !== "T") {
+            filtros.push({ field: "completado", operator: "eq", value: datos.estado === "C" });
         }
         if (datos.fechaInicio) filtros.push({ field: "created", operator: "gt", value: datos.fechaInicio });
         if (datos.fechaFin) filtros.push({ field: "created", operator: "lt", value: datos.fechaFin });
 
+        const columnas = ['id', 'nombre', 'created', 'fecha_inicio', 'fecha_fin', 'fecha_terminado', 'prioridad', 'completado'];
 
-        const data = await this.tareasService.paginate(
-            1,
-            0,
-            ['id', 'nombre', 'created', 'fecha_inicio', 'fecha_fin', 'fecha_terminado', 'prioridad', 'completado'],
+
+
+        const dataIterator = this.tareasService.paginateGenerator(
+            10000,
+            columnas,
             datos.busqueda,
             [],
             [],
@@ -90,30 +92,37 @@ export class ReportesWorker {
         );
 
 
-        const reporteBuffer: Buffer = this.tareasService.obtenerReporte(descripcion, data.data);
-
-        if (!reporteBuffer || !Buffer.isBuffer(reporteBuffer)) {
-            throw new Error('El reporte no se generó correctamente');
-        }
-        const fecha = new Date().toISOString().replace(/[:.]/g, '-');
-        const uuid = uuidv4();
-        const fileName = `ReporteTareas_${uuid}_${fecha}.xlsx`;
-
-        const reportsDir = path.resolve(process.cwd(), 'public', 'reports');
-
-        if (!fs.existsSync(reportsDir)) {
-            fs.mkdirSync(reportsDir, { recursive: true });
-        }
-
-        const filePath = path.join(reportsDir, fileName);
-
-        fs.writeFileSync(filePath, reporteBuffer);
-        const finalPath = `/public/reports/${fileName}`;
+        const objeto = { tareas: dataIterator, descripcion };
         
+        const posiciones = {
+            descripcion: { row: 2, col: 1 },
+            tareas: [
+                { row: 5, col: 1 },
+                { row: 5, col: 2 },
+                { row: 5, col: 3 },
+                { row: 5, col: 4 },
+                { row: 5, col: 5 },
+                { row: 5, col: 6 },
+                { row: 5, col: 7 },
+                { row: 5, col: 8 },
+
+            ]
+        };
+
+        const mapeo = {
+            tareas: ["nombre", "descripcion", "created", "fecha_inicio", "fecha_fin", "fecha_terminado", "prioridad", "completado"]
+        };
+
+
+        const ruta: string = await this.excelService.generarReporte("reporte-tareas", objeto, posiciones, ["tareas"], mapeo);
+
+
         await this.reportesService.update(datosReporte.id, {
-            nombreArchivo: finalPath,
+            nombreArchivo: ruta,
             estado: EstadoReporte.COMPLETADO
         });
-        this.logger.log(`Reporte generado correctamente: ${filePath}`);
+
+        this.logger.log(`Reporte generado correctamente: ${ruta}`);
     }
+
 }
